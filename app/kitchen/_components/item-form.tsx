@@ -5,35 +5,41 @@ import { cn } from '@/lib/util'
 import { useActionState, useEffect, useRef } from 'react'
 import Submit from '@/components/forms/submit'
 import { FormState } from '@/types/form'
-import type { Item, ItemForm } from '../_actions/items'
+import { deleteItem, type Item, type ItemForm } from '../_actions/items'
 import Select from '@/components/forms/select'
 
 export default function ItemForm({
-  data = {},
+  data,
   submit,
   action,
 }: {
-  data?: Partial<Item['node']>
+  data?: Item['node']
   submit: string
   action: (
     id: any,
-    state: FormState<Item['node']>,
+    state: FormState<ItemForm>,
     payload: FormData,
-  ) => Promise<FormState<Item['node']>>
+  ) => Promise<FormState<ItemForm>>
 }) {
   const ref = useRef<HTMLButtonElement>(null)
   const [state, formAction, pending] = useActionState(
-    action.bind(null, data.id),
-    {
-      data,
-    },
+    action.bind(null, data?.id),
+    { data },
   )
 
   useEffect(() => {
     if (!state.success) return
 
-    ref.current?.click()
+    handleClose()
   }, [state])
+
+  function handleClose() {
+    ref.current?.click()
+  }
+
+  async function handleDelete() {
+    if (await deleteItem.bind(null, data?.id)()) handleClose()
+  }
 
   return (
     <>
@@ -48,14 +54,14 @@ export default function ItemForm({
           type='text'
           name='name'
           label='Name'
-          defaultValue={state.data.name}
+          defaultValue={state.data?.name}
           placeholder='e.g. Tomato'
           errors={state.errors?.name}
         />
         <Select
           name='store'
           label='Store'
-          defaultValue={state.data.store as any ?? 'cupboard'}
+          defaultValue={state.data?.store ?? 'cupboard'}
           errors={state.errors?.store}
         >
           <option value='cupboard'>Cupboard</option>
@@ -67,8 +73,9 @@ export default function ItemForm({
           inputMode='numeric'
           name='count'
           label='Count'
-          defaultValue={state.data.count as any}
+          defaultValue={state.data?.count}
           placeholder='0'
+          clearable={!!data}
           errors={state.errors?.count}
         />
         <Submit disabled={pending}>{submit}</Submit>
@@ -81,6 +88,20 @@ export default function ItemForm({
           >
             <span>{state.message}</span>
           </div>
+        )}
+        {!!data && (
+          <>
+            <div className='w-full max-w-xs p-5'>
+              <hr className='w-full rounded-full border-base-300' />
+            </div>
+            <button
+              type='button'
+              className='btn btn-error w-full max-w-xs'
+              onClick={handleDelete}
+            >
+              Delete Item
+            </button>
+          </>
         )}
       </form>
     </>

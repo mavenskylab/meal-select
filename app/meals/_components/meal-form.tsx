@@ -1,6 +1,6 @@
 'use client'
 
-import type { Item } from '@/app/kitchen/_actions/items'
+import { type Item } from '@/app/kitchen/_actions/items'
 import FormProvider from '@/components/forms/form-provider'
 import Input from '@/components/forms/input'
 import Select from '@/components/forms/select'
@@ -11,8 +11,9 @@ import { cn } from '@/lib/util'
 import { FormState } from '@/types/form'
 import { useEffect, useRef } from 'react'
 import { useFieldArray } from 'react-hook-form'
+import { HiXMark } from 'react-icons/hi2'
+import { deleteMeal } from '../_actions/meals'
 import { useMealForm } from '../_hooks/use-meal-form'
-import { XMarkIcon } from '@heroicons/react/24/solid'
 
 export type MealFormProps = {
   items: Item[]
@@ -72,6 +73,10 @@ function Form({
     handleClose()
   }, [form, handleClose])
 
+  async function handleDelete() {
+    if (await deleteMeal.bind(null, data?.id)()) handleClose()
+  }
+
   const values = form.getValues()
 
   return (
@@ -101,6 +106,20 @@ function Form({
         >
           <span>{form.formState.message}</span>
         </div>
+      )}
+      {!!data && (
+        <>
+          <div className='w-full max-w-xs p-5'>
+            <hr className='w-full rounded-full border-base-300' />
+          </div>
+          <button
+            type='button'
+            className='btn btn-error w-full max-w-xs'
+            onClick={handleDelete}
+          >
+            Delete Meal
+          </button>
+        </>
       )}
     </form>
   )
@@ -158,7 +177,7 @@ function Items({ items, form }: { items: Item[]; form: Form<MealForm> }) {
               disabled={fields.length - 1 === index}
               onClick={() => remove(index)}
             >
-              <XMarkIcon className='size-6' />
+              <HiXMark />
             </button>
           </div>
           <Input

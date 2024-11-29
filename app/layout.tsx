@@ -3,6 +3,7 @@ import '@/app/globals.css'
 
 import type { Metadata } from 'next'
 import Header from './_components/header'
+import Providers from './_components/providers'
 
 export const metadata: Metadata = {
   title: 'Meal Selector',
@@ -17,10 +18,12 @@ export default function RootLayout({
   return (
     <html lang='en' data-theme='dark' className='font-mono'>
       <body>
-        <div className='grid size-full grid-rows-[auto_1fr] divide-y divide-base-300'>
-          <Header />
-          <div className='h-full'>{children}</div>
-        </div>
+        <Providers>
+          <div className='grid size-full grid-rows-[auto_1fr] divide-y divide-base-300'>
+            <Header />
+            <div className='h-full'>{children}</div>
+          </div>
+        </Providers>
       </body>
     </html>
   )

@@ -18,7 +18,6 @@ export function useFormState<T extends object, P extends unknown[]>(
   const [state, formAction, isPending] = useActionState(action, initialState)
 
   useEffect(() => {
-    console.dir({ test: 1, ...state }, { depth: null })
     form.reset()
     form.reset(state.data as T)
   }, [state])

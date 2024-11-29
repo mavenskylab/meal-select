@@ -8,7 +8,12 @@ export type SubmitProps = {
   HTMLButtonElement
 >
 
-export default function Submit({ type, className, children, ...props }: SubmitProps) {
+export default function Submit({
+  type,
+  className,
+  children,
+  ...props
+}: SubmitProps) {
   return (
     <button
       type={type ?? 'submit'}

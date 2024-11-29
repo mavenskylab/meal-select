@@ -1,6 +1,6 @@
 'use server'
 
-import { getClient, gql } from '@/lib/graphql'
+import { getClient, gql, ItemOrderBy } from '@/lib/graphql'
 import { FormState } from '@/types/form'
 import { revalidateTag } from 'next/cache'
 import { z } from 'zod'
@@ -18,17 +18,24 @@ export type ItemForm = z.infer<typeof ItemSchema> | Item['node']
 export async function getItems({
   search = '',
   store,
+  orderBy,
 }: {
   search?: string
   store?: string
+  orderBy?: ItemOrderBy[]
 }) {
   const client = getClient()
 
   const { data } = await client.query({
     query: gql(/* GraphQL */ `
-      query GetItems($search: String, $store: String) {
+      query GetItems(
+        $search: String
+        $store: String
+        $orderBy: [ItemOrderBy!]
+      ) {
         itemCollection(
           filter: { name: { ilike: $search }, store: { eq: $store } }
+          orderBy: $orderBy
         ) {
           edges {
             node {
@@ -41,7 +48,7 @@ export async function getItems({
         }
       }
     `),
-    variables: { search: `%${search}%`, store },
+    variables: { search: `%${search}%`, store, orderBy },
   })
 
   return data.itemCollection?.edges ?? []
@@ -154,23 +161,19 @@ export async function updateItem(
     }
   }
 }
-
-export async function clearItem(id: any) {
+export async function deleteItem(id: any) {
   const client = getClient()
 
   try {
     await client.mutate({
       mutation: gql(/* GraphQL */ `
-        mutation ClearItem($id: BigInt, $count: Int!) {
-          updateItemCollection(
-            filter: { id: { eq: $id } }
-            set: { count: $count }
-          ) {
+        mutation DeleteItem($id: BigInt) {
+          deleteFromItemCollection(filter: { id: { eq: $id } }) {
             affectedCount
           }
         }
       `),
-      variables: { id, count: 0 },
+      variables: { id },
     })
 
     revalidateTag('items')
