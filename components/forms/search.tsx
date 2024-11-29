@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from '@/hooks/use-search-params'
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
+import { HiMagnifyingGlass } from 'react-icons/hi2'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -18,7 +18,7 @@ export default function Search() {
   return (
     <label className='input input-bordered flex items-center gap-2'>
       <span className='sr-only'>Search</span>
-      <MagnifyingGlassIcon className='size-6' />
+      <HiMagnifyingGlass />
       <input
         type='text'
         className='grow'

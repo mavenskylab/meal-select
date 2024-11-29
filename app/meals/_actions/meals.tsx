@@ -1,17 +1,26 @@
 'use server'
 
-import { getClient, gql } from '@/lib/graphql'
+import { getClient, gql, MealOrderBy } from '@/lib/graphql'
 import { MealForm, MealSchema } from '@/lib/schemas/meal'
 import { FormState } from '@/types/form'
 import { revalidateTag } from 'next/cache'
 
-export async function getMeals({ search = '' }: { search?: string }) {
+export async function getMeals({
+  search = '',
+  orderBy,
+}: {
+  search?: string
+  orderBy?: MealOrderBy[]
+}) {
   const client = getClient()
 
   const { data } = await client.query({
     query: gql(/* GraphQL */ `
-      query GetMeals($search: String) {
-        mealCollection(filter: { name: { ilike: $search } }) {
+      query GetMeals($search: String, $orderBy: [MealOrderBy!]) {
+        mealCollection(
+          filter: { name: { ilike: $search } }
+          orderBy: $orderBy
+        ) {
           edges {
             node {
               id
@@ -32,7 +41,7 @@ export async function getMeals({ search = '' }: { search?: string }) {
         }
       }
     `),
-    variables: { search: `%${search}%` },
+    variables: { search: `%${search}%`, orderBy },
   })
 
   return data.mealCollection?.edges ?? []

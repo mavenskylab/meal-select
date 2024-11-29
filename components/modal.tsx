@@ -16,17 +16,15 @@ export default function Modal({
   const ref = useRef<HTMLDialogElement>(null)
 
   return (
-    <>
-      <div
-        role='button'
-        className={cn('btn', className)}
-        onClick={() => ref.current?.showModal()}
-      >
-        {button}
-      </div>
+    <div
+      role='button'
+      className={cn('btn', className)}
+      onClick={() => ref.current?.showModal()}
+    >
+      {button}
       <dialog ref={ref} className='modal'>
         {children}
       </dialog>
-    </>
+    </div>
   )
 }

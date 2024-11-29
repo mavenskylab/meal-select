@@ -1,5 +1,6 @@
-import { QuestionMarkCircleIcon, TrophyIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi'
+import { HiTrophy } from 'react-icons/hi2'
 
 export default function Page() {
   return (
@@ -10,7 +11,7 @@ export default function Page() {
             href='/select/knockout'
             className='btn grid size-40 grid-flow-row gap-3 p-5'
           >
-            <TrophyIcon className='size-24 stroke-1' />
+            <HiTrophy className='size-24' />
             <span>Knockout</span>
           </Link>
         </div>
@@ -19,7 +20,7 @@ export default function Page() {
             href='/select/random'
             className='btn grid size-40 grid-flow-row gap-3 p-5'
           >
-            <QuestionMarkCircleIcon className='size-24 stroke-1' />
+            <GiPerspectiveDiceSixFacesRandom className='size-24' />
             <span>Random</span>
           </Link>
         </div>

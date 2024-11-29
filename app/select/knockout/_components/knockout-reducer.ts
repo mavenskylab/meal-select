@@ -5,11 +5,14 @@ export type KnockoutState = {
     meals: Meal[]
     rounds: number
     round: number
+    matches: number
     match: number
     base: number
+    count: number
   }
   toAdvance: Meal[]
   match: [Meal, Meal]
+  progress: number
   winner?: Meal
 }
 
@@ -40,16 +43,21 @@ export function knockoutInitializer(_meals: Meal[]): KnockoutState {
 
   const meals = _meals.slice(base - remainder)
 
+  const matches = base + Math.floor(meals.length / 2) - 1
+
   return {
     _: {
       meals,
       rounds,
       round: 0,
+      matches,
       match: 0,
       base,
+      count: 0,
     },
     toAdvance,
     match: [meals.at(0)!, meals.at(1)!] as [Meal, Meal],
+    progress: 0,
   }
 }
 
@@ -64,6 +72,8 @@ function nextKnockout(
 
   const meals = match === 0 ? toAdvance : state._.meals
 
+  const count = state._.count + 1
+
   return {
     ...state,
     _: {
@@ -72,9 +82,11 @@ function nextKnockout(
       round,
       match,
       ...(match === 0 && { base: state._.base / 2 }),
+      count,
     },
     ...(match === 0 ? { toAdvance: [] } : { toAdvance }),
     match: [meals.at(match * 2)!, meals.at(match * 2 + 1)!] as [Meal, Meal],
+    progress: count / state._.matches,
     ...(meals.length === 1 && { winner: meals.at(0)! }),
   }
 }

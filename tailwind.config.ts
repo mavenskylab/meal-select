@@ -1,7 +1,7 @@
 import daisyui from 'daisyui'
 import { black, dark, light } from 'daisyui/src/theming/themes'
 import type { Config } from 'tailwindcss'
-import { blue, gray, purple, rose } from 'tailwindcss/colors'
+import { blue, gray, teal, violet } from 'tailwindcss/colors'
 
 export default {
   content: [
@@ -32,17 +32,17 @@ export default {
       {
         light: {
           ...light,
-          primary: rose[700],
+          primary: violet[700],
           secondary: blue[500],
-          accent: purple[500],
+          accent: teal[500],
         },
       },
       {
         dark: {
           ...dark,
-          primary: rose[700],
+          primary: violet[700],
           secondary: blue[500],
-          accent: purple[500],
+          accent: teal[500],
           'base-100': gray[950],
           'base-200': gray[900],
           'base-300': gray[800],
@@ -51,7 +51,7 @@ export default {
       {
         black: {
           ...black,
-          primary: rose[700],
+          primary: violet[700],
           secondary: blue[500],
         },
       },

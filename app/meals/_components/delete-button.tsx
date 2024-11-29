@@ -1,6 +1,6 @@
 'use client'
 
-import { XMarkIcon } from '@heroicons/react/24/solid'
+import { HiXMark } from 'react-icons/hi2'
 import { MouseEvent } from 'react'
 
 export default function DeleteButton({ action }: { action: () => void }) {
@@ -16,7 +16,7 @@ export default function DeleteButton({ action }: { action: () => void }) {
       onClick={handleClear}
     >
       <span className='sr-only'>Close</span>
-      <XMarkIcon className='size-3' />
+      <HiXMark className='size-3' />
     </button>
   )
 }
