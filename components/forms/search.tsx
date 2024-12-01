@@ -1,9 +1,9 @@
 'use client'
 
 import { useSearchParams } from '@/hooks/use-search-params'
-import { HiMagnifyingGlass } from 'react-icons/hi2'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { HiMagnifyingGlass } from 'react-icons/hi2'
 
 export default function Search() {
   const router = useRouter()
@@ -15,6 +15,16 @@ export default function Search() {
     router.replace(`${pathname}?${setSearchParam('search', search)}`)
   }, [router, pathname, setSearchParam, search])
 
+  return <SearchFallback search={search} setSearch={setSearch} />
+}
+
+export function SearchFallback({
+  search,
+  setSearch,
+}: {
+  search?: string | string[]
+  setSearch?: Dispatch<SetStateAction<string | string[]>>
+}) {
   return (
     <label className='input input-bordered flex items-center gap-2'>
       <span className='sr-only'>Search</span>
@@ -25,7 +35,8 @@ export default function Search() {
         name='search'
         value={search}
         placeholder='Search'
-        onChange={(event) => setSearch(event.target.value)}
+        disabled={!setSearch}
+        onChange={(event) => setSearch?.(event.target.value)}
       />
     </label>
   )
