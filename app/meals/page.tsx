@@ -1,12 +1,11 @@
-import Search from '@/components/forms/search'
 import Modal from '@/components/modal'
-import { HiPlus, HiXMark } from 'react-icons/hi2'
-import { addMeal, getMeals } from './_actions/meals'
+import { OrderByDirection } from '@/lib/graphql'
 import { unstable_cache } from 'next/cache'
+import { HiPlus, HiXMark } from 'react-icons/hi2'
+import { getItems } from '../kitchen/_actions/items'
+import { addMeal, getMeals } from './_actions/meals'
 import Meal from './_components/meal'
 import MealForm from './_components/meal-form'
-import { getItems } from '../kitchen/_actions/items'
-import { OrderByDirection } from '@/lib/graphql'
 
 export default async function Page({
   searchParams,
@@ -26,21 +25,18 @@ export default async function Page({
   })({ orderBy: [{ name: OrderByDirection.AscNullsLast }] })
 
   return (
-    <main>
-      <div className='px-5 pt-5'>
-        <Search />
-      </div>
+    <>
       <div className='grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'>
         {meals.map((meal) => (
           <Meal key={meal.node.id} items={items} meal={meal} />
         ))}
       </div>
       <Modal
-        className={'btn-circle btn-primary btn-lg absolute bottom-5 right-5'}
+        className={'btn-circle btn-primary btn-lg fixed bottom-5 right-5'}
         button={
           <>
             <span className='sr-only'>Add Meal</span>
-            <HiPlus className='size-10 fill-primary-content' />
+            <HiPlus className='size-10' />
           </>
         }
       >
@@ -57,6 +53,6 @@ export default async function Page({
           <MealForm items={items} submit='Add Meal' action={addMeal} />
         </div>
       </Modal>
-    </main>
+    </>
   )
 }

@@ -12,13 +12,28 @@ export default function Sidebar() {
   const [searchParams, setSearchParam] = useSearchParams()
 
   return (
+    <SidebarFallback
+      searchParams={searchParams}
+      setSearchParam={setSearchParam}
+    />
+  )
+}
+
+export function SidebarFallback({
+  searchParams,
+  setSearchParam,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>
+  setSearchParam?: (name: string, value: string | string[]) => string
+}) {
+  return (
     <aside className='flex flex-col gap-5 py-5 md:w-60'>
       <section>
         <Link
           href='/kitchen'
           className={cn(
             'flex w-full gap-3 p-3',
-            `${!Object.keys(searchParams).length ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams && !Object.keys(searchParams).length ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
           )}
         >
           <HiSparkles />
@@ -27,10 +42,10 @@ export default function Sidebar() {
       </section>
       <section>
         <Link
-          href={`?${setSearchParam('store', 'cupboard')}`}
+          href={`?${setSearchParam?.('store', 'cupboard') ?? ''}`}
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams.store === 'cupboard' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams?.store === 'cupboard' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
           )}
         >
           <MdDoorSliding />
@@ -39,10 +54,10 @@ export default function Sidebar() {
       </section>
       <section>
         <Link
-          href={`?${setSearchParam('store', 'fridge')}`}
+          href={`?${setSearchParam?.('store', 'fridge') ?? ''}`}
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams.store === 'fridge' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams?.store === 'fridge' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
           )}
         >
           <BiSolidFridge />
@@ -51,10 +66,10 @@ export default function Sidebar() {
       </section>
       <section>
         <Link
-          href={`?${setSearchParam('store', 'freezer')}`}
+          href={`?${setSearchParam?.('store', 'freezer') ?? ''}`}
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams.store === 'freezer' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams?.store === 'freezer' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
           )}
         >
           <IoSnow />
