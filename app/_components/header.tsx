@@ -1,14 +1,34 @@
 'use client'
 
+import Switch from '@/components/forms/switch'
 import { cn } from '@/lib/util'
-import { HiBars3 } from 'react-icons/hi2'
 import { ClassValue } from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { RefObject, useRef } from 'react'
+import { RefObject, useEffect, useRef } from 'react'
+import { HiBars3 } from 'react-icons/hi2'
+import { useFont } from './contexts/font-context'
 
 export default function Header() {
+  const desktopOptionsRef = useRef<HTMLDetailsElement>(null)
   const mobileNavRef = useRef<HTMLDetailsElement>(null)
+
+  useEffect(() => {
+    function handleBlur(event: MouseEvent) {
+      if (
+        desktopOptionsRef.current &&
+        !desktopOptionsRef.current.contains(event.target as Node)
+      ) {
+        desktopOptionsRef.current.open = false
+      }
+    }
+
+    document.addEventListener('mousedown', handleBlur)
+
+    return () => {
+      document.removeEventListener('mousedown', handleBlur)
+    }
+  }, [])
 
   return (
     <header>
@@ -21,6 +41,16 @@ export default function Header() {
         <div className='flex-none'>
           <ul className='menu menu-horizontal gap-3 px-1'>
             <Links className='hidden md:flex' />
+            <li className='hidden md:flex'>
+              <details ref={desktopOptionsRef}>
+                <summary className='after:hidden'>
+                  <HiBars3 />
+                </summary>
+                <ul className='right-0 z-50 w-screen max-w-xs rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
+                  <Options />
+                </ul>
+              </details>
+            </li>
             <li className='md:hidden'>
               <details ref={mobileNavRef}>
                 <summary className='after:hidden'>
@@ -28,6 +58,7 @@ export default function Header() {
                 </summary>
                 <ul className='right-0 z-50 w-[90dvw] rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
                   <Links navRef={mobileNavRef} />
+                  <Options />
                 </ul>
               </details>
             </li>
@@ -99,6 +130,28 @@ function Links({
         >
           Selector
         </Link>
+      </li>
+    </>
+  )
+}
+
+function Options() {
+  const { font, setFont } = useFont()
+
+  return (
+    <>
+      <li className='font-dyslexic *:flex'>
+        <Switch
+          label='Dyslexic Font'
+          checked={font === 'font-dyslexic'}
+          onChange={(event) =>
+            setFont(
+              (event.target as HTMLInputElement).checked
+                ? 'font-dyslexic'
+                : 'font-mono',
+            )
+          }
+        />
       </li>
     </>
   )
