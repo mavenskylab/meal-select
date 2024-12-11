@@ -1,63 +1,61 @@
 'use client'
 
+import Select from '@/components/forms/select'
 import Switch from '@/components/forms/switch'
 import { cn } from '@/lib/util'
 import { ClassValue } from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { RefObject, useEffect, useRef } from 'react'
+import { MouseEvent, MouseEventHandler, useState } from 'react'
 import { HiBars3 } from 'react-icons/hi2'
+import { SelectedTheme } from '../_actions/theme'
 import { useFont } from './contexts/font-context'
+import { useTheme } from './contexts/theme-context'
 
 export default function Header() {
-  const desktopOptionsRef = useRef<HTMLDetailsElement>(null)
-  const mobileNavRef = useRef<HTMLDetailsElement>(null)
+  const [open, setOpen] = useState(false)
 
-  useEffect(() => {
-    function handleBlur(event: MouseEvent) {
-      if (
-        desktopOptionsRef.current &&
-        !desktopOptionsRef.current.contains(event.target as Node)
-      ) {
-        desktopOptionsRef.current.open = false
-      }
-    }
+  function handleToggle(event: MouseEvent) {
+    event.preventDefault()
+    setOpen((prev) => !prev)
+  }
 
-    document.addEventListener('mousedown', handleBlur)
-
-    return () => {
-      document.removeEventListener('mousedown', handleBlur)
-    }
-  }, [])
+  function handleClose() {
+    setOpen(false)
+  }
 
   return (
     <header>
-      <nav className='navbar'>
+      <nav className='navbar relative z-50'>
         <div className='flex-1'>
-          <Link href='/' className='btn btn-ghost text-xl text-primary'>
+          <Link
+            href='/'
+            className='btn btn-ghost text-xl text-primary'
+            onClick={handleClose}
+          >
             Meal Selector
           </Link>
         </div>
         <div className='flex-none'>
           <ul className='menu menu-horizontal gap-3 px-1'>
-            <Links className='hidden md:flex' />
+            <Links className='hidden md:flex' onClick={handleClose} />
             <li className='hidden md:flex'>
-              <details ref={desktopOptionsRef}>
-                <summary className='after:hidden'>
+              <details open={open}>
+                <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
-                <ul className='right-0 z-50 w-screen max-w-xs rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
+                <ul className='right-0 w-dvw max-w-xs rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
                   <Options />
                 </ul>
               </details>
             </li>
             <li className='md:hidden'>
-              <details ref={mobileNavRef}>
-                <summary className='after:hidden'>
+              <details open={open}>
+                <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
-                <ul className='right-0 z-50 w-[90dvw] rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
-                  <Links navRef={mobileNavRef} />
+                <ul className='right-0 w-[90dvw] rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
+                  <Links onClick={handleClose} />
                   <Options />
                 </ul>
               </details>
@@ -65,24 +63,24 @@ export default function Header() {
           </ul>
         </div>
       </nav>
+      <div
+        className={cn('fixed top-0 z-40 h-dvh w-dvw', {
+          hidden: !open,
+        })}
+        onClick={handleClose}
+      />
     </header>
   )
 }
 
 function Links({
   className,
-  navRef,
+  onClick,
 }: {
   className?: ClassValue
-  navRef?: RefObject<HTMLDetailsElement>
+  onClick: MouseEventHandler<HTMLAnchorElement>
 }) {
   const pathname = usePathname()
-
-  function handleClick() {
-    if (navRef?.current) {
-      navRef.current.open = false
-    }
-  }
 
   return (
     <>
@@ -96,7 +94,7 @@ function Links({
               'text-primary': pathname.includes('/kitchen'),
             },
           )}
-          onClick={handleClick}
+          onClick={onClick}
         >
           Kitchen
         </Link>
@@ -111,7 +109,7 @@ function Links({
               'text-primary': pathname.includes('/meals'),
             },
           )}
-          onClick={handleClick}
+          onClick={onClick}
         >
           Meals
         </Link>
@@ -126,7 +124,7 @@ function Links({
               'text-primary': pathname.includes('/select'),
             },
           )}
-          onClick={handleClick}
+          onClick={onClick}
         >
           Selector
         </Link>
@@ -137,9 +135,22 @@ function Links({
 
 function Options() {
   const { font, setFont } = useFont()
+  const { selected, setTheme } = useTheme()
 
   return (
     <>
+      <li className='*:flex *:items-start'>
+        <Select
+          label='Theme'
+          defaultValue={selected}
+          onChange={(event) => setTheme(event.target.value as SelectedTheme)}
+        >
+          <option value='system'>System</option>
+          <option value='light'>Light</option>
+          <option value='dark'>Dark</option>
+          <option value='black'>Black</option>
+        </Select>
+      </li>
       <li className='font-dyslexic *:flex'>
         <Switch
           label='Dyslexic Font'

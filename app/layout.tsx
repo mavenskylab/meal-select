@@ -3,9 +3,10 @@ import '@/app/globals.css'
 import '@fontsource/opendyslexic'
 
 import type { Metadata } from 'next'
+import { getFont } from './_actions/font'
+import { getTheme } from './_actions/theme'
 import Header from './_components/header'
 import Providers from './_components/providers'
-import { getFont } from './_actions/font'
 
 export const metadata: Metadata = {
   title: 'Meal Selector',
@@ -18,11 +19,12 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const font = await getFont()
+  const theme = await getTheme()
 
   return (
-    <html lang='en' data-theme='dark' className={font}>
+    <html lang='en' data-theme={theme.value} className={font}>
       <body>
-        <Providers font={font}>
+        <Providers font={font} theme={theme}>
           <div className='grid size-full grid-rows-[auto_1fr] divide-y divide-base-300'>
             <Header />
             <div className='h-full'>{children}</div>

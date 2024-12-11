@@ -33,7 +33,7 @@ export function SidebarFallback({
           href='/kitchen'
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams && !Object.keys(searchParams).length ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams && !Object.keys(searchParams).length ? 'bg-base-200 text-primary' : 'hover:bg-base-200 hover:text-primary'}`,
           )}
         >
           <HiSparkles />
@@ -45,7 +45,7 @@ export function SidebarFallback({
           href={`?${setSearchParam?.('store', 'cupboard') ?? ''}`}
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams?.store === 'cupboard' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams?.store === 'cupboard' ? 'bg-base-200 text-primary' : 'hover:bg-base-200 hover:text-primary'}`,
           )}
         >
           <MdDoorSliding />
@@ -57,7 +57,7 @@ export function SidebarFallback({
           href={`?${setSearchParam?.('store', 'fridge') ?? ''}`}
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams?.store === 'fridge' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams?.store === 'fridge' ? 'bg-base-200 text-primary' : 'hover:bg-base-200 hover:text-primary'}`,
           )}
         >
           <BiSolidFridge />
@@ -69,7 +69,7 @@ export function SidebarFallback({
           href={`?${setSearchParam?.('store', 'freezer') ?? ''}`}
           className={cn(
             'flex w-full gap-3 p-3',
-            `${searchParams?.store === 'freezer' ? 'bg-gray-900 text-primary' : 'hover:bg-gray-900 hover:text-primary'}`,
+            `${searchParams?.store === 'freezer' ? 'bg-base-200 text-primary' : 'hover:bg-base-200 hover:text-primary'}`,
           )}
         >
           <IoSnow />
