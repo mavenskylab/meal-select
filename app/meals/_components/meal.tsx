@@ -1,5 +1,5 @@
-import type { Item } from '@/app/kitchen/_actions/items'
 import Modal from '@/components/modal'
+import { Item } from '@/lib/schemas/item'
 import type { Meal } from '@/lib/schemas/meal'
 import { HiXMark } from 'react-icons/hi2'
 import { updateMeal } from '../_actions/meals'
@@ -33,9 +33,9 @@ export default function Meal({
         </div>
         <MealForm
           items={items}
-          data={node}
+          data={node as any}
           submit='Update Meal'
-          action={updateMeal}
+          action={updateMeal.bind(null, node.id)}
         />
       </div>
     </Modal>

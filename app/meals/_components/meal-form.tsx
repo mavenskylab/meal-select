@@ -1,37 +1,29 @@
 'use client'
 
-import { type Item } from '@/app/kitchen/_actions/items'
-import FormProvider from '@/components/forms/form-provider'
 import Input from '@/components/forms/input'
 import Select from '@/components/forms/select'
 import Submit from '@/components/forms/submit'
 import { type Form, useFormState } from '@/hooks/use-form-state'
-import { type Meal, type MealForm } from '@/lib/schemas/meal'
+import { Item } from '@/lib/schemas/item'
+import { type Meal, type MealForm, MealSchema } from '@/lib/schemas/meal'
 import { cn } from '@/lib/util'
 import { FormState } from '@/types/form'
 import { useEffect, useRef } from 'react'
 import { useFieldArray } from 'react-hook-form'
 import { HiXMark } from 'react-icons/hi2'
 import { deleteMeal } from '../_actions/meals'
-import { useMealForm } from '../_hooks/use-meal-form'
 
 export type MealFormProps = {
   items: Item[]
-  data?: Meal['node']
+  data?: Meal['node'] & MealForm
   submit: string
   action: (
-    id: number,
     state: FormState<MealForm>,
     payload: MealForm,
   ) => Promise<FormState<MealForm>>
 }
 
-export default function MealForm({
-  items,
-  data,
-  submit,
-  action,
-}: MealFormProps) {
+export default function MealForm(props: MealFormProps) {
   const ref = useRef<HTMLButtonElement>(null)
 
   function handleClose() {
@@ -43,15 +35,7 @@ export default function MealForm({
       <form method='dialog' className='hidden'>
         <button ref={ref} type='submit' />
       </form>
-      <FormProvider useForm={useMealForm}>
-        <Form
-          items={items}
-          data={data}
-          submit={submit}
-          action={action}
-          handleClose={handleClose}
-        />
-      </FormProvider>
+      <Form {...props} handleClose={handleClose} />
     </>
   )
 }
@@ -63,28 +47,32 @@ function Form({
   action,
   handleClose,
 }: MealFormProps & { handleClose: () => void }) {
-  const [form, formAction] = useFormState(action.bind(null, data?.id), {
-    data: data as MealForm,
+  const [form, formAction, reset] = useFormState(MealSchema, action, {
+    data: {
+      mealItemCollection: {
+        edges: [],
+      },
+      ...data,
+    },
   })
 
   useEffect(() => {
     if (!form.formState.isSubmitSuccessful) return
 
+    if (!data) reset()
+
     handleClose()
-  }, [form, handleClose])
+  }, [form.formState.isSubmitSuccessful, handleClose])
 
   async function handleDelete() {
     if (await deleteMeal.bind(null, data?.id)()) handleClose()
   }
-
-  const values = form.getValues()
 
   return (
     <form className='grid grid-flow-row place-items-center gap-3'>
       <Input
         type='text'
         label='Name'
-        defaultValue={values.name ?? data?.name}
         placeholder='e.g. Pasta'
         errors={form.formState.errors?.name}
         {...form.register('name')}
@@ -125,7 +113,13 @@ function Form({
   )
 }
 
-function Items({ items, form }: { items: Item[]; form: Form<MealForm> }) {
+function Items({
+  items,
+  form,
+}: {
+  items: Item[]
+  form: Form<typeof MealSchema>
+}) {
   const { watch } = form
   const { fields, append, remove } = useFieldArray({
     name: 'mealItemCollection.edges',
@@ -144,7 +138,7 @@ function Items({ items, form }: { items: Item[]; form: Form<MealForm> }) {
         (value) => !value?.node?.item?.id,
       )
 
-      if (!hasEmpty) append({} as any)
+      if (!hasEmpty) append({ node: { count: '' } } as any)
     })
     return unsubscribe
   }, [watch])
