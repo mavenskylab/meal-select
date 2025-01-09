@@ -74,7 +74,7 @@ function Links({
   navRef,
 }: {
   className?: ClassValue
-  navRef?: RefObject<HTMLDetailsElement>
+  navRef?: RefObject<HTMLDetailsElement | null>
 }) {
   const pathname = usePathname()
 
