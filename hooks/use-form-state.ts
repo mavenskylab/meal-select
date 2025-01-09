@@ -74,7 +74,7 @@ function useActionState<T, P extends unknown[]>(
 ) {
   const initialStateRef = useRef(initialState)
   const [state, setState] = useState(() => initialStateRef.current)
-  const [pending, startTransaction] = useTransition()
+  const [pending, startTransition] = useTransition()
 
   useEffect(() => {
     if (!isEqual(initialStateRef.current, initialState)) {
@@ -84,9 +84,12 @@ function useActionState<T, P extends unknown[]>(
   }, [initialState])
 
   async function formAction(...payload: P) {
-    startTransaction(async () => {
+    //@ts-ignore
+    startTransition(async () => {
       const newState = await action(state, ...payload)
-      setState(() => newState)
+      startTransition(() => {
+        setState(() => newState)
+      })
     })
   }
 
