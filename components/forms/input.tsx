@@ -31,7 +31,7 @@ export default function Input({
       <div className='label'>
         <span className='label-text'>{label}</span>
       </div>
-      <div className='relative w-full max-w-xs'>
+      <div className='relative w-full'>
         <input
           ref={ref}
           className={cn('input input-bordered w-full', className, {

@@ -23,7 +23,7 @@ export default function Select({
         <span className='label-text'>{label}</span>
       </div>
       <select
-        className={cn('select select-bordered', className, {
+        className={cn('select select-bordered w-full', className, {
           'input-error': !!errors,
         })}
         {...props}
