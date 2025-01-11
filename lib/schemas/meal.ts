@@ -11,7 +11,7 @@ export const MealSchema = z.object({
             item: z.object({
               id: z.coerce.number().int(),
             }),
-            count: z.coerce.number().int(),
+            count: z.coerce.number().int().nonnegative('Cannot be negative'),
           }),
         }),
       ),

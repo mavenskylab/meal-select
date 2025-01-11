@@ -1,7 +1,8 @@
 import Modal from '@/components/modal'
 import { HiXMark } from 'react-icons/hi2'
-import { type Item, updateItem } from '../_actions/items'
+import { updateItem } from '../_actions/items'
 import ItemForm from './item-form'
+import type { Item } from '@/lib/schemas/item'
 
 export default function Item({ item: { node } }: { item: Item }) {
   return (
@@ -25,7 +26,7 @@ export default function Item({ item: { node } }: { item: Item }) {
             </button>
           </form>
         </div>
-        <ItemForm data={node} submit='Update Item' action={updateItem} />
+        <ItemForm data={node as any} submit='Update Item' action={updateItem.bind(null, node.id)} />
       </div>
     </Modal>
   )

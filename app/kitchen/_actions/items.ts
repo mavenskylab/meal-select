@@ -1,19 +1,9 @@
 'use server'
 
 import { getClient, gql, ItemOrderBy } from '@/lib/graphql'
+import { ItemForm, ItemSchema } from '@/lib/schemas/item'
 import { FormState } from '@/types/form'
 import { revalidateTag } from 'next/cache'
-import { z } from 'zod'
-
-const ItemSchema = z.object({
-  name: z.string().trim().min(1, 'Name is required'),
-  store: z.string(),
-  count: z.coerce.number().int(),
-})
-
-export type Item = Awaited<ReturnType<typeof getItems>>[number]
-
-export type ItemForm = z.infer<typeof ItemSchema> | Item['node']
 
 export async function getItems({
   search = '',
@@ -55,21 +45,18 @@ export async function getItems({
 }
 
 export async function addItem(
-  id: any,
   state: FormState<ItemForm>,
-  payload: FormData,
+  payload: ItemForm,
 ): Promise<FormState<ItemForm>> {
   const client = getClient()
 
-  const values = Object.fromEntries(payload.entries())
-
-  const { success, data, error } = ItemSchema.safeParse(values)
+  const { success, data, error } = ItemSchema.safeParse(payload)
 
   if (!success) {
     return {
       success,
-      data: values as any,
-      errors: error.flatten().fieldErrors as any,
+      data: payload,
+      errors: error.format(),
     }
   }
 
@@ -84,7 +71,7 @@ export async function addItem(
           }
         }
       `),
-      variables: data satisfies ItemForm,
+      variables: data,
     })
 
     revalidateTag('items')
@@ -94,7 +81,7 @@ export async function addItem(
     console.dir(err, { depth: null })
     return {
       success: false,
-      data: values as any,
+      data: payload,
       message:
         'An error occurred while trying to add the item. Please try again.',
     }
@@ -104,19 +91,17 @@ export async function addItem(
 export async function updateItem(
   id: any,
   state: FormState<ItemForm>,
-  payload: FormData,
+  payload: ItemForm,
 ): Promise<FormState<ItemForm>> {
   const client = getClient()
 
-  const values = Object.fromEntries(payload.entries())
-
-  const { success, data, error } = ItemSchema.safeParse(values)
+  const { success, data, error } = ItemSchema.safeParse(payload)
 
   if (!success) {
     return {
       success,
-      data: values as any,
-      errors: error.flatten().fieldErrors as any,
+      data: payload,
+      errors: error.format(),
     }
   }
 
@@ -142,20 +127,20 @@ export async function updateItem(
           }
         }
       `),
-      variables: { id, ...data } satisfies ItemForm,
+      variables: { id, ...data },
     })
 
     revalidateTag('items')
 
     return {
       success,
-      data: response.data!.updateItemCollection.records.at(0)!,
+      data: response.data!.updateItemCollection.records.at(0)! as any,
     }
   } catch (err) {
     console.dir(err, { depth: null })
     return {
       success: false,
-      data: values as any,
+      data: payload,
       message:
         'An error occurred while trying to add the item. Please try again.',
     }

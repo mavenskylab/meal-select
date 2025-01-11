@@ -48,7 +48,6 @@ export async function getMeals({
 }
 
 export async function addMeal(
-  id: number,
   state: FormState<MealForm>,
   payload: MealForm,
 ): Promise<FormState<MealForm>> {
@@ -174,7 +173,7 @@ export async function updateMeal(
             item_id,
             count,
           }),
-        ) ?? [],
+        ),
   }
 
   try {
@@ -189,16 +188,20 @@ export async function updateMeal(
       variables: { id },
     })
 
-    await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation UpdateMealItems($mealItemCollection: [MealItemInsertInput!]!) {
-          insertIntoMealItemCollection(objects: $mealItemCollection) {
-            affectedCount
+    if (mealItemCollection?.length) {
+      await client.mutate({
+        mutation: gql(/* GraphQL */ `
+          mutation UpdateMealItems(
+            $mealItemCollection: [MealItemInsertInput!]!
+          ) {
+            insertIntoMealItemCollection(objects: $mealItemCollection) {
+              affectedCount
+            }
           }
-        }
-      `),
-      variables: { mealItemCollection },
-    })
+        `),
+        variables: { mealItemCollection },
+      })
+    }
 
     const response = await client.mutate({
       mutation: gql(/* GraphQL */ `
