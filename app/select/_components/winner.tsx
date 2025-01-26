@@ -1,8 +1,10 @@
+'use client'
+
 import Input from '@/components/forms/input'
 import type { Meal } from '@/lib/schemas/meal'
-import Link from 'next/link'
+import { revalidate } from '../_actions/revalidate'
 
-export default function Meal({ meal: { node } }: { meal: Meal }) {
+export default function Winner({ meal: { node } }: { meal: Meal }) {
   return (
     <div className='grid h-fit w-full grid-flow-row gap-3 rounded bg-base-200 p-5'>
       <span className='w-80 max-w-xs text-3xl text-primary'>{node.name}</span>
@@ -15,9 +17,13 @@ export default function Meal({ meal: { node } }: { meal: Meal }) {
       ))}
       <button className='btn btn-success'>Confirm</button>
       <hr className='mx-5 rounded-full border-base-300' />
-      <Link href='' className='btn btn-error'>
+      <button
+        type='button'
+        className='btn btn-error'
+        onClick={() => revalidate()}
+      >
         Retry
-      </Link>
+      </button>
     </div>
   )
 }

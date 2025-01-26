@@ -34,7 +34,7 @@ export function useFormState<
     mode: 'onTouched',
     criteriaMode: 'all',
     defaultValues: { ...initialState.data, ...state.data } as T,
-    //@ts-ignore
+    //@ts-expect-error Type instantiation is excessively deep and possibly infinite.
     errors: state.errors,
     resolver: async (data) => {
       const { error } = await schema.safeParseAsync(data)
@@ -84,7 +84,6 @@ function useActionState<T, P extends unknown[]>(
   }, [initialState])
 
   async function formAction(...payload: P) {
-    //@ts-ignore
     startTransition(async () => {
       const newState = await action(state, ...payload)
       startTransition(() => {

@@ -26,7 +26,11 @@ export default function Item({ item: { node } }: { item: Item }) {
             </button>
           </form>
         </div>
-        <ItemForm data={node as any} submit='Update Item' action={updateItem.bind(null, node.id)} />
+        <ItemForm
+          data={node as any}
+          submit='Update Item'
+          action={updateItem.bind(null, node.id)}
+        />
       </div>
     </Modal>
   )

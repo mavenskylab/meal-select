@@ -1,9 +1,9 @@
 'use client'
 
 import type { Meal } from '@/lib/schemas/meal'
-import { useReducer } from 'react'
+import { useEffect, useReducer } from 'react'
 import { knockoutInitializer, knockoutReducer } from './knockout-reducer'
-import Winner from '../../_components/meal'
+import Winner from '../../_components/winner'
 
 export default function Knockout({ meals }: { meals: Meal[] }) {
   const [{ winner, match, progress }, dispatch] = useReducer(
@@ -11,6 +11,8 @@ export default function Knockout({ meals }: { meals: Meal[] }) {
     meals,
     knockoutInitializer,
   )
+
+  useEffect(() => dispatch({ type: 'reset', payload: { meals } }), [meals])
 
   return (
     <main className='grid w-full grid-cols-1 justify-items-center gap-3 p-5'>

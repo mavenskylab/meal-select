@@ -153,27 +153,26 @@ export async function updateMeal(
 
   const { name, mealItemCollection } = {
     ...data,
-    mealItemCollection:
-      data.mealItemCollection?.edges
-        .filter(
-          ({
-            node: {
-              item: { id },
-            },
-          }) => !!id,
-        )
-        .map(
-          ({
-            node: {
-              item: { id: item_id },
-              count,
-            },
-          }) => ({
-            meal_id: id,
-            item_id,
+    mealItemCollection: data.mealItemCollection?.edges
+      .filter(
+        ({
+          node: {
+            item: { id },
+          },
+        }) => !!id,
+      )
+      .map(
+        ({
+          node: {
+            item: { id: item_id },
             count,
-          }),
-        ),
+          },
+        }) => ({
+          meal_id: id,
+          item_id,
+          count,
+        }),
+      ),
   }
 
   try {
