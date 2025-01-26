@@ -12,6 +12,6 @@ export async function getFont() {
 
 export async function setFont(font: Font) {
   const cookieStore = await cookies()
-  
+
   cookieStore.set('font', font)
 }

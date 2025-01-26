@@ -16,17 +16,28 @@ export type KnockoutState = {
   winner?: Meal
 }
 
-export type KnockoutAction = {
+type KnockoutActionNext = {
   type: 'next'
   payload: {
     winner: number
   }
 }
 
+type KnockoutActionReset = {
+  type: 'reset'
+  payload: {
+    meals: Meal[]
+  }
+}
+
+export type KnockoutAction = KnockoutActionNext | KnockoutActionReset
+
 export function knockoutReducer(state: KnockoutState, action: KnockoutAction) {
   switch (action.type) {
     case 'next':
       return nextKnockout(state, action)
+    case 'reset':
+      return knockoutInitializer(action.payload.meals)
     default:
       return state
   }
@@ -63,7 +74,7 @@ export function knockoutInitializer(_meals: Meal[]): KnockoutState {
 
 function nextKnockout(
   state: KnockoutState,
-  { payload: { winner } }: KnockoutAction,
+  { payload: { winner } }: KnockoutActionNext,
 ) {
   const toAdvance = [...state.toAdvance, state.match.at(winner)!]
 

@@ -11,7 +11,7 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useState
+  useState,
 } from 'react'
 
 const ThemeContext = createContext<
@@ -27,7 +27,7 @@ export function useTheme() {
 }
 
 export type ThemeProviderProps = {
-  value: ThemeState,
+  value: ThemeState
   children?: React.ReactNode
 }
 
