@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi'
-import { HiTrophy } from 'react-icons/hi2'
+import { HiCursorArrowRays, HiTrophy } from 'react-icons/hi2'
 
 export default function Page() {
   return (
@@ -22,6 +22,15 @@ export default function Page() {
           >
             <GiPerspectiveDiceSixFacesRandom className='size-24' />
             <span>Random</span>
+          </Link>
+        </div>
+        <div className='grid grow place-items-center'>
+          <Link
+            href='/select/manual'
+            className='btn grid size-40 grid-flow-row gap-3 p-5'
+          >
+            <HiCursorArrowRays className='size-24' />
+            <span>Manual</span>
           </Link>
         </div>
       </div>

@@ -47,6 +47,39 @@ export async function getMeals({
   return data.mealCollection?.edges ?? []
 }
 
+export async function getMeal(id: any) {
+  const client = getClient()
+
+  const { data } = await client.query({
+    query: gql(/* GraphQL */ `
+      query GetMeal($id: BigInt) {
+        mealCollection(filter: { id: { eq: $id } }) {
+          edges {
+            node {
+              id
+              name
+              mealItemCollection {
+                edges {
+                  node {
+                    item {
+                      id
+                      name
+                    }
+                    count
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `),
+    variables: { id },
+  })
+
+  return data.mealCollection?.edges.at(0) ?? null
+}
+
 export async function addMeal(
   state: FormState<MealForm>,
   payload: MealForm,
