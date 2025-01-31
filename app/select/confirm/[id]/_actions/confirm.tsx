@@ -3,14 +3,14 @@
 import { MealForm } from '@/lib/schemas/meal'
 import { FormState } from '@/types/form'
 import { getMeal } from './meal'
-import { getClient } from '@/lib/supabase/client'
+// import { getClient } from '@/lib/supabase/client'
 
 export async function confirm(
   id: any,
   state: FormState<MealForm>,
   payload: MealForm,
 ): Promise<FormState<MealForm>> {
-  const client = await getClient()
+  // const client = await getClient()
 
   const meal = await getMeal(id)
 
