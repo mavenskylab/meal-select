@@ -1,7 +1,4 @@
-import daisyui from 'daisyui'
-import { black, dark, light } from 'daisyui/src/theming/themes'
 import type { Config } from 'tailwindcss'
-import { blue, gray, teal, violet } from 'tailwindcss/colors'
 
 export default {
   content: [
@@ -21,6 +18,7 @@ export default {
       },
     },
   },
+  // TODO: Fix for tailwindcss v4
   safelist: [
     {
       pattern: /^opacity-\d{0,3}$/,
@@ -29,45 +27,4 @@ export default {
       pattern: /^bg-base-\d{0,3}\/\d{0,3}$/,
     },
   ],
-  plugins: [daisyui],
-  daisyui: {
-    themes: [
-      {
-        light: {
-          ...light,
-          primary: violet[700],
-          secondary: blue[500],
-          accent: teal[500],
-        },
-      },
-      {
-        dark: {
-          ...dark,
-          primary: violet[700],
-          secondary: blue[500],
-          accent: teal[500],
-          'base-100': gray[950],
-          'base-200': gray[900],
-          'base-300': gray[800],
-        },
-      },
-      {
-        black: {
-          ...black,
-          primary: violet[700],
-          secondary: blue[500],
-          accent: teal[500],
-          // 'base-200': black['base-100'],
-          // 'base-300': black['base-100'],
-          '--rounded-box': undefined,
-          '--rounded-btn': undefined,
-          '--rounded-badge': undefined,
-          '--animation-btn': undefined,
-          '--animation-input': undefined,
-          '--btn-focus-scale': undefined,
-          '--tab-radius': undefined,
-        },
-      },
-    ],
-  },
 } as const satisfies Config

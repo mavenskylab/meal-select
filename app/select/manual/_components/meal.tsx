@@ -6,7 +6,7 @@ export default function Meal({ meal: { node } }: { meal: Meal }) {
     <Link
       href={`confirm/${node.id}`}
       role='button'
-      className='btn h-auto p-0 text-start text-lg text-primary'
+      className='btn text-primary h-auto p-0 text-start text-lg'
     >
       <div className='grid w-full grid-flow-row gap-3 p-3'>
         <span>{node.name}</span>

@@ -98,7 +98,7 @@ function Form({
       {!!data && (
         <>
           <div className='w-full max-w-xs p-5'>
-            <hr className='w-full rounded-full border-base-300' />
+            <hr className='border-base-300 w-full rounded-full' />
           </div>
           <button
             type='button'
@@ -146,7 +146,13 @@ function Items({
   return (
     <>
       {fields.map((item, index) => (
-        <div key={item.id} className='w-full max-w-xs grid-cols-subgrid'>
+        <div
+          key={item.id}
+          className='grid w-full max-w-xs gap-3'
+        >
+          <div className='w-full max-w-xs px-5'>
+            <hr className='border-base-300 w-full rounded-full' />
+          </div>
           <div className='grid w-full grid-cols-[1fr_auto] place-items-center gap-3'>
             <Select
               label='Item'

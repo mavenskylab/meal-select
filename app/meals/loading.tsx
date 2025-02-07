@@ -12,12 +12,12 @@ export default function Loading() {
       </div>
       <div
         role='button'
-        className='btn btn-circle btn-primary no-animation btn-lg fixed bottom-5 right-5'
+        className='btn btn-circle btn-primary no-animation btn-lg fixed right-5 bottom-5'
       >
         <span className='sr-only'>Add Meal</span>
         <HiPlus className='size-10' />
       </div>
-      <div className='btn btn-circle no-animation btn-lg fixed bottom-5 right-5 bg-black/25' />
+      <div className='btn btn-circle no-animation btn-lg fixed right-5 bottom-5 bg-black/25' />
     </>
   )
 }

@@ -30,7 +30,7 @@ export default function Header() {
         <div className='flex-1'>
           <Link
             href='/'
-            className='btn btn-ghost text-xl text-primary'
+            className='btn btn-ghost text-primary text-xl'
             onClick={handleClose}
           >
             Meal Selector
@@ -44,7 +44,7 @@ export default function Header() {
                 <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
-                <ul className='right-0 w-dvw max-w-xs rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
+                <ul className='menu border-base-300 bg-base-100 right-0 w-dvw max-w-xs rounded-t-none border-x border-b p-2 shadow-xs gap-3'>
                   <Options />
                 </ul>
               </details>
@@ -54,7 +54,7 @@ export default function Header() {
                 <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
-                <ul className='right-0 w-[90dvw] rounded-t-none border-x border-b border-base-300 bg-base-100 p-2 shadow-sm'>
+                <ul className='menu border-base-300 bg-base-100 right-0 w-[90dvw] rounded-t-none border-x border-b p-2 shadow-xs gap-3'>
                   <Links onClick={handleClose} />
                   <Options />
                 </ul>
@@ -141,6 +141,7 @@ function Options() {
     <>
       <li className='*:flex *:items-start'>
         <Select
+        className='border-none shadow-none max-w-full'
           label='Theme'
           defaultValue={selected}
           onChange={(event) => setTheme(event.target.value as SelectedTheme)}
@@ -153,6 +154,7 @@ function Options() {
       </li>
       <li className='font-dyslexic *:flex'>
         <Switch
+        className='max-w-full'
           label='Dyslexic Font'
           checked={font === 'font-dyslexic'}
           onChange={(event) =>

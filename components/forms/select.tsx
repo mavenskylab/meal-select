@@ -18,27 +18,21 @@ export default function Select({
   ...props
 }: SelectProps) {
   return (
-    <label className='form-control w-full max-w-xs'>
-      <div className='label'>
-        <span className='label-text'>{label}</span>
-      </div>
-      <select
-        className={cn('select select-bordered w-full', className, {
-          'input-error': !!errors,
+    <fieldset className={cn('fieldset w-full max-w-xs p-0', className)}>
+      <label
+        className={cn('select w-full', {
+          'select-error': !!errors,
         })}
-        {...props}
       >
-        {children}
-      </select>
-      {errors && (
-        <div className='label *:text-error'>
-          {errors?._errors.map((error, index) => (
-            <span key={index} className='label-text'>
-              {error}
-            </span>
-          ))}
-        </div>
-      )}
-    </label>
+        <span className='label min-w-auto!'>{label}</span>
+        <select {...props}>{children}</select>
+      </label>
+      {errors &&
+        errors?._errors.map((error, index) => (
+          <span key={index} className='fieldset-label text-error'>
+            {error}
+          </span>
+        ))}
+    </fieldset>
   )
 }

@@ -32,7 +32,7 @@ export default async function Page({
         ))}
       </div>
       <Modal
-        className={'btn-circle btn-primary btn-lg fixed bottom-5 right-5'}
+        className={'btn-circle btn-primary btn-xl fixed right-5 bottom-5'}
         button={
           <>
             <span className='sr-only'>Add Meal</span>
