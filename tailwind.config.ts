@@ -19,12 +19,12 @@ export default {
     },
   },
   // TODO: Fix for tailwindcss v4
-  safelist: [
-    {
-      pattern: /^opacity-\d{0,3}$/,
-    },
-    {
-      pattern: /^bg-base-\d{0,3}\/\d{0,3}$/,
-    },
-  ],
+  // safelist: [
+  //   {
+  //     pattern: /^opacity-\d{0,3}$/,
+  //   },
+  //   {
+  //     pattern: /^bg-base-\d{0,3}\/\d{0,3}$/,
+  //   },
+  // ],
 } as const satisfies Config
