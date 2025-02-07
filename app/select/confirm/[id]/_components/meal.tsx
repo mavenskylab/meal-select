@@ -32,14 +32,14 @@ export default function Meal({
   }, [form.formState.isSubmitSuccessful])
 
   return (
-    <form className='grid h-fit w-full grid-flow-row gap-3 rounded bg-base-200 p-5'>
-      <span className='w-80 max-w-xs text-3xl text-primary'>{node.name}</span>
+    <form className='bg-base-200 grid h-fit w-full grid-flow-row gap-3 rounded-sm p-5'>
+      <span className='text-primary w-80 max-w-xs text-3xl'>{node.name}</span>
       {node.mealItemCollection?.edges.map(({ node: { item, count } }) => (
         <div key={item?.id} className='grid max-w-xs grid-flow-row gap-3'>
           <Input type='text' label={item!.name} defaultValue={count} />
         </div>
       ))}
-      <hr className='mx-5 rounded-full border-base-300' />
+      <hr className='border-base-300 mx-5 rounded-full' />
       <button
         className='btn btn-success'
         onClick={() => formAction(form.getValues())}

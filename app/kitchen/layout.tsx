@@ -8,7 +8,7 @@ import { Suspense } from 'react'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className='grid size-full grid-cols-[auto_1fr] divide-x divide-base-200'>
+    <div className='divide-base-200 grid size-full grid-cols-[auto_1fr] divide-x'>
       <Suspense fallback={<SidebarFallback />}>
         <Sidebar />
       </Suspense>
@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
         <Modal
-          className={'btn-circle btn-primary btn-lg fixed bottom-5 right-5'}
+          className={'btn-circle btn-primary btn-xl fixed right-5 bottom-5'}
           button={
             <>
               <span className='sr-only'>Add Item</span>

@@ -10,7 +10,7 @@ export default function Item({ item: { node } }: { item: Item }) {
       className='h-auto p-0 text-start'
       button={
         <div className='grid w-full grid-flow-row gap-3 p-3'>
-          <span className='text-lg text-primary'>{node.name}</span>
+          <span className='text-primary text-lg'>{node.name}</span>
           <span className='capitalize'>{node.store}</span>
           <span>{node.count}</span>
         </div>

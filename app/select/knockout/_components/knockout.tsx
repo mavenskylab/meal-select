@@ -4,9 +4,10 @@ import type { Meal } from '@/lib/schemas/meal'
 import { useEffect, useReducer } from 'react'
 import { knockoutInitializer, knockoutReducer } from './knockout-reducer'
 import Winner from '../../_components/winner'
+import { cn } from '@/lib/util'
 
 export default function Knockout({ meals }: { meals: Meal[] }) {
-  const [{ winner, match, progress }, dispatch] = useReducer(
+  const [{ winner, match, progress, isLast }, dispatch] = useReducer(
     knockoutReducer,
     meals,
     knockoutInitializer,
@@ -32,12 +33,14 @@ export default function Knockout({ meals }: { meals: Meal[] }) {
           <div className='grid w-full grid-cols-1 gap-3 sm:grid-cols-2'>
             <KnockoutTile
               meal={match[0]}
+              isLast={isLast}
               onClick={() => {
                 dispatch({ type: 'next', payload: { winner: 0 } })
               }}
             />
             <KnockoutTile
               meal={match[1]}
+              isLast={isLast}
               onClick={() => {
                 dispatch({ type: 'next', payload: { winner: 1 } })
               }}
@@ -51,14 +54,24 @@ export default function Knockout({ meals }: { meals: Meal[] }) {
 
 function KnockoutTile({
   meal: { node },
+  isLast,
   onClick,
 }: {
   meal: Meal
+  isLast: boolean
   onClick: () => void
 }) {
   return (
-    <button className='btn size-full text-5xl' onClick={onClick}>
-      {node.name}
+    <button
+      className='grid size-full place-items-center overflow-hidden rounded *:col-start-1 *:row-start-1'
+      onClick={onClick}
+    >
+      {isLast && (
+        <div className='aspect-square h-[250%] animate-spin bg-conic/decreasing from-violet-700 via-lime-300 to-violet-700' />
+      )}
+      <div className={cn('z-10 size-full', { 'p-3': isLast })}>
+        <div className='btn size-full text-5xl'>{node.name}</div>
+      </div>
     </button>
   )
 }

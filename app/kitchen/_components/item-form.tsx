@@ -108,7 +108,7 @@ function Form({
       {!!data && (
         <>
           <div className='w-full max-w-xs p-5'>
-            <hr className='w-full rounded-full border-base-300' />
+            <hr className='border-base-300 w-full rounded-full' />
           </div>
           <button
             type='button'

@@ -17,7 +17,7 @@ export default function Meal({
       className='h-auto p-0 text-start'
       button={
         <div className='grid w-full grid-flow-row gap-3 p-3'>
-          <span className='text-lg text-primary'>{node.name}</span>
+          <span className='text-primary text-lg'>{node.name}</span>
         </div>
       }
     >

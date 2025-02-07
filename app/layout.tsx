@@ -25,7 +25,7 @@ export default async function RootLayout({
     <html lang='en' data-theme={theme.value} className={font}>
       <body>
         <Providers font={font} theme={theme}>
-          <div className='grid size-full grid-rows-[auto_1fr] divide-y divide-base-300'>
+          <div className='divide-base-300 grid size-full grid-rows-[auto_1fr] divide-y'>
             <Header />
             <div className='h-full'>{children}</div>
           </div>

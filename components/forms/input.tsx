@@ -27,39 +27,34 @@ export default function Input({
   }
 
   return (
-    <label className='form-control w-full max-w-xs'>
-      <div className='label'>
-        <span className='label-text'>{label}</span>
-      </div>
-      <div className='relative w-full'>
-        <input
-          ref={ref}
-          className={cn('input input-bordered w-full', className, {
-            'input-error': !!errors,
-          })}
-          {...props}
-        />
-        {clearable && (
-          <div className='absolute right-2 top-0 grid h-full place-items-center'>
-            <button
-              type='button'
-              className='btn btn-circle btn-ghost btn-sm'
-              onClick={handleClear}
-            >
-              <HiXMark />
-            </button>
-          </div>
-        )}
-      </div>
-      {errors && (
-        <div className='label *:text-error'>
-          {errors?._errors.map((error, index) => (
-            <span key={index} className='label-text'>
-              {error}
-            </span>
-          ))}
+    <fieldset className={cn('fieldset w-full max-w-xs p-0', className)}>
+      <label
+        className={cn('input input-bordered w-full max-w-xs', {
+          'input-error': !!errors,
+        })}
+      >
+        <span className='label min-w-auto!'>{label}</span>
+        <div className='relative size-full'>
+          <input ref={ref} {...props} />
+          {clearable && (
+            <div className='absolute top-0 right-0 grid h-full place-items-center'>
+              <button
+                type='button'
+                className='btn btn-circle btn-ghost btn-sm'
+                onClick={handleClear}
+              >
+                <HiXMark />
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </label>
+      </label>
+      {errors &&
+        errors?._errors.map((error, index) => (
+          <span key={index} className='fieldset-label text-error'>
+            {error}
+          </span>
+        ))}
+    </fieldset>
   )
 }

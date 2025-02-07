@@ -13,26 +13,25 @@ export default function Switch({
   ...props
 }: SwitchProps) {
   return (
-    <div className='form-control w-full max-w-xs'>
-      <label className='label w-full cursor-pointer'>
-        <span className='label-text'>{label}</span>
+    <fieldset className={cn('fieldset w-full max-w-xs p-0', className)}>
+      <label
+        className={cn('input input-border w-full', {
+          'input-error': !!errors,
+        })}
+      >
+        <span className='label min-w-auto!'>{label}</span>
         <input
           type='checkbox'
-          className={cn('toggle toggle-primary', className, {
-            'input-error': !!errors,
-          })}
+          className='toggle! toggle-primary! ms-auto'
           {...props}
         />
-        {errors && (
-          <div className='label *:text-error'>
-            {errors?._errors.map((error, index) => (
-              <span key={index} className='label-text'>
-                {error}
-              </span>
-            ))}
-          </div>
-        )}
       </label>
-    </div>
+      {errors &&
+        errors?._errors.map((error, index) => (
+          <span key={index} className='fieldset-label text-error'>
+            {error}
+          </span>
+        ))}
+    </fieldset>
   )
 }
