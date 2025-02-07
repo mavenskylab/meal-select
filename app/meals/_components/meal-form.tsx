@@ -146,10 +146,7 @@ function Items({
   return (
     <>
       {fields.map((item, index) => (
-        <div
-          key={item.id}
-          className='grid w-full max-w-xs gap-3'
-        >
+        <div key={item.id} className='grid w-full max-w-xs gap-3'>
           <div className='w-full max-w-xs px-5'>
             <hr className='border-base-300 w-full rounded-full' />
           </div>

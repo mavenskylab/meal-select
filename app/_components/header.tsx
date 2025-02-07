@@ -44,7 +44,7 @@ export default function Header() {
                 <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
-                <ul className='menu border-base-300 bg-base-100 right-0 w-dvw max-w-xs rounded-t-none border-x border-b p-2 shadow-xs gap-3'>
+                <ul className='menu border-base-300 bg-base-100 right-0 w-dvw max-w-xs gap-3 rounded-t-none border-x border-b p-2 shadow-xs'>
                   <Options />
                 </ul>
               </details>
@@ -54,7 +54,7 @@ export default function Header() {
                 <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
-                <ul className='menu border-base-300 bg-base-100 right-0 w-[90dvw] rounded-t-none border-x border-b p-2 shadow-xs gap-3'>
+                <ul className='menu border-base-300 bg-base-100 right-0 w-[90dvw] gap-3 rounded-t-none border-x border-b p-2 shadow-xs'>
                   <Links onClick={handleClose} />
                   <Options />
                 </ul>
@@ -141,7 +141,7 @@ function Options() {
     <>
       <li className='*:flex *:items-start'>
         <Select
-        className='border-none shadow-none max-w-full'
+          className='max-w-full border-none shadow-none'
           label='Theme'
           defaultValue={selected}
           onChange={(event) => setTheme(event.target.value as SelectedTheme)}
@@ -154,7 +154,7 @@ function Options() {
       </li>
       <li className='font-dyslexic *:flex'>
         <Switch
-        className='max-w-full'
+          className='max-w-full'
           label='Dyslexic Font'
           checked={font === 'font-dyslexic'}
           onChange={(event) =>

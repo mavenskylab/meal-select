@@ -1,33 +1,35 @@
 @import 'tailwindcss';
 @config '../tailwind.config.ts';
 
-
 @plugin "daisyui" {
-  themes: light, dark --default --prefersdark, black;
-};
+  themes:
+    light,
+    dark --default --prefersdark,
+    black;
+}
 
 @plugin "daisyui/theme" {
-  name: "light";
-  
+  name: 'light';
+
   --color-primary: var(--color-violet-700);
   --color-secondary: var(--color-blue-500);
   --color-accent: var(--color-teal-500);
-};
+}
 
 @plugin "daisyui/theme" {
-  name: "dark";
-  
+  name: 'dark';
+
   --color-primary: var(--color-violet-700);
   --color-secondary: var(--color-blue-500);
   --color-accent: var(--color-teal-500);
   --color-base-100: var(--color-gray-950);
   --color-base-200: var(--color-gray-900);
   --color-base-300: var(--color-gray-800);
-};
+}
 
 @plugin "daisyui/theme" {
-  name: "black";
-  
+  name: 'black';
+
   --color-primary: var(--color-violet-700);
   --color-secondary: var(--color-blue-500);
   --color-accent: var(--color-teal-500);
@@ -39,7 +41,7 @@
   --border: 1px;
   --depth: 1;
   --noise: 0;
-};
+}
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
