@@ -4,13 +4,13 @@ import type { Meal } from '@/lib/schemas/meal'
 import { revalidate } from '../_actions/revalidate'
 import Link from 'next/link'
 
-export default function Winner({ meal: { node } }: { meal: Meal }) {
+export default function Winner({ meal }: { meal: Meal }) {
   return (
     <div className='bg-base-200 grid h-fit w-full grid-flow-row gap-3 rounded-sm p-5'>
-      <span className='text-primary w-80 max-w-xs text-3xl'>{node.name}</span>
+      <span className='text-primary w-80 max-w-xs text-3xl'>{meal.name}</span>
       <hr className='border-base-300 mx-5 rounded-full' />
       <Link
-        href={`confirm/${node.id}`}
+        href={`confirm/${meal.id}`}
         role='button'
         className='btn btn-success'
       >

@@ -1,54 +1,32 @@
 'use server'
 
-import { getClient, gql, ItemOrderBy } from '@/lib/graphql'
 import { ItemForm, ItemSchema } from '@/lib/schemas/item'
+import { getClient } from '@/lib/supabase/client'
 import { FormState } from '@/types/form'
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 
-export async function getItems({
-  search = '',
-  store,
-  orderBy,
-}: {
-  search?: string
-  store?: string
-  orderBy?: ItemOrderBy[]
-}) {
-  const client = getClient()
+export const getItems = unstable_cache(
+  async ({ search = '', store }: { search?: string; store?: string } = {}) => {
+    const client = await getClient()
 
-  const { data } = await client.query({
-    query: gql(/* GraphQL */ `
-      query GetItems(
-        $search: String
-        $store: String
-        $orderBy: [ItemOrderBy!]
-      ) {
-        itemCollection(
-          filter: { name: { ilike: $search }, store: { eq: $store } }
-          orderBy: $orderBy
-        ) {
-          edges {
-            node {
-              id
-              name
-              store
-              count
-            }
-          }
-        }
-      }
-    `),
-    variables: { search: `%${search}%`, store, orderBy },
-  })
+    const query = client.from('Item').select('*, tags:Tag(tag_id:id, name)')
 
-  return data.itemCollection?.edges ?? []
-}
+    if (store) query.eq('store', store)
+    if (search) query.ilike('name', `%${search}%`)
+
+    const { data, error } = await query
+
+    if (error) throw error
+
+    return data
+  },
+)
 
 export async function addItem(
   state: FormState<ItemForm>,
   payload: ItemForm,
 ): Promise<FormState<ItemForm>> {
-  const client = getClient()
+  const client = await getClient()
 
   const { success, data, error } = ItemSchema.safeParse(payload)
 
@@ -60,32 +38,25 @@ export async function addItem(
     }
   }
 
-  try {
-    await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation AddItem($name: String!, $store: String!, $count: Int) {
-          insertIntoItemCollection(
-            objects: [{ name: $name, store: $store, count: $count }]
-          ) {
-            affectedCount
-          }
-        }
-      `),
-      variables: data,
-    })
+  const { tags, ...item } = data
 
-    revalidateTag('items')
+  const response = await client.from('Item').insert(item).select('id').single()
 
-    return { success, data: {} }
-  } catch (err) {
-    console.dir(err, { depth: null })
-    return {
-      success: false,
-      data: payload,
-      message:
-        'An error occurred while trying to add the item. Please try again.',
-    }
+  if (response.error) throw response.error
+
+  const item_id = response.data.id
+
+  if (tags.length) {
+    const response = await client
+      .from('ItemTag')
+      .insert(tags.map(({ tag_id }) => ({ item_id, tag_id })))
+
+    if (response.error) throw response.error
   }
+
+  revalidateTag('items')
+
+  return { success, data: {} }
 }
 
 export async function updateItem(
@@ -93,7 +64,7 @@ export async function updateItem(
   state: FormState<ItemForm>,
   payload: ItemForm,
 ): Promise<FormState<ItemForm>> {
-  const client = getClient()
+  const client = await getClient()
 
   const { success, data, error } = ItemSchema.safeParse(payload)
 
@@ -105,67 +76,37 @@ export async function updateItem(
     }
   }
 
-  try {
-    const response = await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation UpdateItem(
-          $id: BigInt
-          $name: String!
-          $store: String!
-          $count: Int!
-        ) {
-          updateItemCollection(
-            filter: { id: { eq: $id } }
-            set: { name: $name, store: $store, count: $count }
-          ) {
-            records {
-              id
-              name
-              store
-              count
-            }
-          }
-        }
-      `),
-      variables: { id, ...data },
-    })
+  const { tags, ...item } = data
 
-    revalidateTag('items')
+  const response = await client.from('Item').update(item).eq('id', id)
 
-    return {
-      success,
-      data: response.data!.updateItemCollection.records.at(0)! as any,
-    }
-  } catch (err) {
-    console.dir(err, { depth: null })
-    return {
-      success: false,
-      data: payload,
-      message:
-        'An error occurred while trying to add the item. Please try again.',
-    }
+  if (response.error) throw response.error
+
+  await client.from('ItemTag').delete().eq('item_id', id)
+
+  if (tags.length) {
+    const response = await client
+      .from('ItemTag')
+      .insert(tags.map(({ tag_id }) => ({ item_id: id, tag_id })))
+
+    if (response.error) throw response.error
+  }
+
+  revalidateTag('items')
+
+  return {
+    success,
+    data,
   }
 }
 export async function deleteItem(id: any) {
-  const client = getClient()
+  const client = await getClient()
 
-  try {
-    await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation DeleteItem($id: BigInt) {
-          deleteFromItemCollection(filter: { id: { eq: $id } }) {
-            affectedCount
-          }
-        }
-      `),
-      variables: { id },
-    })
+  const { error, count } = await client.from('Item').delete().eq('id', id)
 
-    revalidateTag('items')
+  if (error) throw error
 
-    return true
-  } catch (err) {
-    console.dir(err, { depth: null })
-    return false
-  }
+  revalidateTag('items')
+
+  return count
 }

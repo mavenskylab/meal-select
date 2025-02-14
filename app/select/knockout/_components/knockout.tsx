@@ -53,7 +53,7 @@ export default function Knockout({ meals }: { meals: Meal[] }) {
 }
 
 function KnockoutTile({
-  meal: { node },
+  meal,
   isLast,
   onClick,
 }: {
@@ -70,7 +70,7 @@ function KnockoutTile({
         <div className='aspect-square h-[250%] animate-spin bg-conic/decreasing from-violet-700 via-lime-300 to-violet-700' />
       )}
       <div className={cn('z-10 size-full', { 'p-3': isLast })}>
-        <div className='btn size-full text-5xl'>{node.name}</div>
+        <div className='btn size-full text-5xl'>{meal.name}</div>
       </div>
     </button>
   )

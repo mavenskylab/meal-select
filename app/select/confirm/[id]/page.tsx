@@ -1,5 +1,5 @@
+import { getMeal } from '@/app/meals/_actions/meals'
 import { confirm } from './_actions/confirm'
-import { getMeal } from './_actions/meal'
 import Meal from './_components/meal'
 
 export default async function Page({
@@ -15,7 +15,7 @@ export default async function Page({
 
   return (
     <main className='grid justify-center p-5'>
-      <Meal meal={meal} action={confirm.bind(null, meal.node.id)} />
+      <Meal meal={meal} action={confirm.bind(null, meal.id)} />
     </main>
   )
 }

@@ -3,15 +3,19 @@
 import Input from '@/components/forms/input'
 import Select from '@/components/forms/select'
 import Submit from '@/components/forms/submit'
-import { useFormState } from '@/hooks/use-form-state'
+import { type Form, useFormState } from '@/hooks/use-form-state'
 import { ItemSchema, type Item, type ItemForm } from '@/lib/schemas/item'
 import { cn } from '@/lib/util'
 import { FormState } from '@/types/form'
-import { useEffect, useRef } from 'react'
+import { ChangeEvent, useEffect, useRef } from 'react'
 import { deleteItem } from '../_actions/items'
+import { Tag } from '@/lib/schemas/tag'
+import { useFieldArray } from 'react-hook-form'
+import { HiXMark } from 'react-icons/hi2'
 
 export type ItemFormProps = {
-  data?: Item['node'] & ItemForm
+  tags: Tag[]
+  data?: Item & ItemForm
   submit: string
   action: (
     state: FormState<ItemForm>,
@@ -37,6 +41,7 @@ export default function ItemForm(props: ItemFormProps) {
 }
 
 function Form({
+  tags,
   data,
   submit,
   action,
@@ -58,7 +63,7 @@ function Form({
   }, [form.formState.isSubmitSuccessful, handleClose])
 
   async function handleDelete() {
-    if (await deleteItem.bind(null, data?.id)()) handleClose()
+    if (data && (await deleteItem.bind(null, data.id)())) handleClose()
   }
 
   return (
@@ -88,6 +93,7 @@ function Form({
         errors={form.formState.errors?.count}
         {...form.register('count')}
       />
+      <Tags tags={tags} form={form} />
       <Submit
         type='button'
         disabled={form.formState.isPending}
@@ -120,5 +126,56 @@ function Form({
         </>
       )}
     </form>
+  )
+}
+
+function Tags({ tags, form }: { tags: Tag[]; form: Form<typeof ItemSchema> }) {
+  const { fields, append, remove } = useFieldArray({
+    name: 'tags',
+    control: form.control,
+  })
+
+  function handleAddTag(e: ChangeEvent<HTMLSelectElement>) {
+    const tag = tags.find(({ id }) => id === Number(e.target.value))
+
+    console.log(tag)
+
+    if (tag) append({ tag_id: tag.id, name: tag.name })
+
+    e.target.value = ''
+  }
+
+  const fieldIds = fields.map(({ tag_id }) => tag_id)
+  const filteredTags = tags.filter(({ id }) => !fieldIds.includes(id))
+
+  return (
+    <div className='grid w-full max-w-xs grid-cols-1 gap-2'>
+      <Select
+        label='Add Tag'
+        disabled={!filteredTags.length}
+        onChange={handleAddTag}
+      >
+        <option value=''>Add Tag</option>
+        {filteredTags.map(({ id, name }) => (
+          <option key={id} value={id}>
+            {name}
+          </option>
+        ))}
+      </Select>
+      <div className='flex w-full gap-1'>
+        {fields.map((tag, index) => (
+          <div key={tag.id} className='badge badge-soft badge-accent'>
+            <span>{tag.name}</span>
+            <button
+              type='button'
+              className='btn btn-circle btn-ghost btn-sm'
+              onClick={remove.bind(null, index)}
+            >
+              <HiXMark />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

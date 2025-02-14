@@ -7,7 +7,7 @@ import { FormState } from '@/types/form'
 import { useEffect } from 'react'
 
 export default function Meal({
-  meal: { node },
+  meal,
   action,
 }: {
   meal: Meal
@@ -17,12 +17,7 @@ export default function Meal({
   ) => Promise<FormState<MealForm>>
 }) {
   const [form, formAction] = useFormState(MealSchema, action, {
-    data: {
-      name: node.name,
-      mealItemCollection: {
-        edges: node.mealItemCollection?.edges ?? [],
-      },
-    } as MealForm,
+    data: meal,
   })
 
   useEffect(() => {
@@ -33,8 +28,8 @@ export default function Meal({
 
   return (
     <form className='bg-base-200 grid h-fit w-full grid-flow-row gap-3 rounded-sm p-5'>
-      <span className='text-primary w-80 max-w-xs text-3xl'>{node.name}</span>
-      {node.mealItemCollection?.edges.map(({ node: { item, count } }) => (
+      <span className='text-primary w-80 max-w-xs text-3xl'>{meal.name}</span>
+      {meal.items.map(({ item, count }) => (
         <div key={item?.id} className='grid max-w-xs grid-flow-row gap-3'>
           <Input type='text' label={item!.name} defaultValue={count} />
         </div>

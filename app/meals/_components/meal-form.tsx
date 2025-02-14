@@ -15,7 +15,7 @@ import { deleteMeal } from '../_actions/meals'
 
 export type MealFormProps = {
   items: Item[]
-  data?: Meal['node'] & MealForm
+  data?: Meal & MealForm
   submit: string
   action: (
     state: FormState<MealForm>,
@@ -48,12 +48,7 @@ function Form({
   handleClose,
 }: MealFormProps & { handleClose: () => void }) {
   const [form, formAction, reset] = useFormState(MealSchema, action, {
-    data: {
-      mealItemCollection: {
-        edges: [],
-      },
-      ...data,
-    },
+    data,
   })
 
   useEffect(() => {
@@ -65,7 +60,7 @@ function Form({
   }, [form.formState.isSubmitSuccessful, handleClose])
 
   async function handleDelete() {
-    if (await deleteMeal.bind(null, data?.id)()) handleClose()
+    if (data && (await deleteMeal.bind(null, data.id)())) handleClose()
   }
 
   return (
@@ -122,7 +117,7 @@ function Items({
 }) {
   const { watch } = form
   const { fields, append, remove } = useFieldArray({
-    name: 'mealItemCollection.edges',
+    name: 'items',
     control: form.control,
   })
 
@@ -132,16 +127,17 @@ function Items({
 
   useEffect(() => {
     const { unsubscribe } = watch((value, { name }) => {
-      if (!name?.includes('mealItemCollection.edges')) return
+      if (!name?.includes('items')) return
 
-      const hasEmpty = !!value.mealItemCollection?.edges?.some(
-        (value) => !value?.node?.item?.id,
-      )
+      const hasEmpty = !!value.items?.some((value) => !value?.item?.id)
 
       if (!hasEmpty) append({ node: { count: '' } } as any)
     })
     return unsubscribe
   }, [watch])
+
+  const fieldIds = fields.map(({ item }) => item?.id)
+  const filteredItems = items.filter(({ id }) => !fieldIds.includes(id))
 
   return (
     <>
@@ -153,18 +149,14 @@ function Items({
           <div className='grid w-full grid-cols-[1fr_auto] place-items-center gap-3'>
             <Select
               label='Item'
-              errors={
-                form.formState.errors?.mealItemCollection?.edges?.[index]?.node
-                  ?.item?.id
-              }
-              {...form.register(
-                `mealItemCollection.edges.${index}.node.item.id`,
-              )}
+              errors={form.formState.errors?.items?.[index]?.item?.id}
+              {...form.register(`items.${index}.item.id`)}
+              disabled={!filteredItems.length}
             >
               <option value=''>-</option>
-              {items.map(({ node }) => (
-                <option key={node.id} value={node.id}>
-                  {node.name}
+              {filteredItems.map(({ id, name }) => (
+                <option key={id} value={id}>
+                  {name}
                 </option>
               ))}
             </Select>
@@ -182,11 +174,8 @@ function Items({
             inputMode='numeric'
             label='Count'
             placeholder='0'
-            errors={
-              form.formState.errors?.mealItemCollection?.edges?.[index]?.node
-                ?.count
-            }
-            {...form.register(`mealItemCollection.edges.${index}.node.count`)}
+            errors={form.formState.errors?.items?.[index]?.count}
+            {...form.register(`items.${index}.count`)}
           />
         </div>
       ))}

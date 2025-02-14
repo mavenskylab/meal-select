@@ -38,13 +38,14 @@ export default function Header() {
         </div>
         <div className='flex-none'>
           <ul className='menu menu-horizontal gap-3 px-1'>
-            <Links className='hidden md:flex' onClick={handleClose} />
+            <HeaderLinks className='hidden md:flex' onClick={handleClose} />
             <li className='hidden md:flex'>
               <details open={open}>
                 <summary className='after:hidden' onClick={handleToggle}>
                   <HiBars3 />
                 </summary>
                 <ul className='menu border-base-300 bg-base-100 right-0 w-dvw max-w-xs gap-3 rounded-t-none border-x border-b p-2 shadow-xs'>
+                  <MenuLinks onClick={handleClose} />
                   <Options />
                 </ul>
               </details>
@@ -55,7 +56,8 @@ export default function Header() {
                   <HiBars3 />
                 </summary>
                 <ul className='menu border-base-300 bg-base-100 right-0 w-[90dvw] gap-3 rounded-t-none border-x border-b p-2 shadow-xs'>
-                  <Links onClick={handleClose} />
+                  <HeaderLinks onClick={handleClose} />
+                  <MenuLinks onClick={handleClose} />
                   <Options />
                 </ul>
               </details>
@@ -73,7 +75,7 @@ export default function Header() {
   )
 }
 
-function Links({
+function HeaderLinks({
   className,
   onClick,
 }: {
@@ -127,6 +129,36 @@ function Links({
           onClick={onClick}
         >
           Selector
+        </Link>
+      </li>
+    </>
+  )
+}
+
+function MenuLinks({
+  className,
+  onClick,
+}: {
+  className?: ClassValue
+  onClick: MouseEventHandler<HTMLAnchorElement>
+}) {
+  const pathname = usePathname()
+
+  return (
+    <>
+      <li>
+        <Link
+          href='/account'
+          className={cn(
+            'hover:text-primary focus:text-primary active:text-primary',
+            className,
+            {
+              'text-primary': pathname.includes('/account'),
+            },
+          )}
+          onClick={onClick}
+        >
+          Account
         </Link>
       </li>
     </>

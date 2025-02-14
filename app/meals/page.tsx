@@ -1,6 +1,4 @@
 import Modal from '@/components/modal'
-import { OrderByDirection } from '@/lib/graphql'
-import { unstable_cache } from 'next/cache'
 import { HiPlus, HiXMark } from 'react-icons/hi2'
 import { getItems } from '../kitchen/_actions/items'
 import { addMeal, getMeals } from './_actions/meals'
@@ -14,21 +12,15 @@ export default async function Page({
 }) {
   const query = await searchParams
 
-  const meals = await unstable_cache(getMeals, ['meals'], {
-    revalidate: 3600,
-    tags: ['meals'],
-  })({ ...query, orderBy: [{ name: OrderByDirection.AscNullsLast }] })
+  const items = await getItems()
 
-  const items = await unstable_cache(getItems, ['items'], {
-    revalidate: 3600,
-    tags: ['items'],
-  })({ orderBy: [{ name: OrderByDirection.AscNullsLast }] })
+  const meals = await getMeals(query)
 
   return (
     <>
       <div className='grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'>
         {meals.map((meal) => (
-          <Meal key={meal.node.id} items={items} meal={meal} />
+          <Meal key={meal.id} items={items} meal={meal} />
         ))}
       </div>
       <Modal

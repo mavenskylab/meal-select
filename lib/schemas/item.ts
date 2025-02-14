@@ -9,6 +9,9 @@ export const ItemSchema = z.object({
     z.literal('freezer'),
   ]),
   count: z.coerce.number().int().nonnegative('Cannot be negative'),
+  tags: z.array(
+    z.object({ tag_id: z.coerce.number().int(), name: z.string().optional() }),
+  ),
 })
 
 export type Item = Awaited<ReturnType<typeof getItems>>[number]
