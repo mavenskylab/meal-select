@@ -5,6 +5,8 @@ import { addItem } from './_actions/items'
 import ItemForm from './_components/item-form'
 import Sidebar, { SidebarFallback } from './_components/sidebar'
 import { Suspense } from 'react'
+import { getTags } from '../account/tags/_actions/tags'
+import { Tag } from '@/lib/schemas/tag'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -40,10 +42,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               </form>
             </div>
-            <ItemForm submit='Add Item' action={addItem} />
+            <Suspense fallback={<AddItem />}>
+              <AddItem />
+            </Suspense>
           </div>
         </Modal>
       </main>
     </div>
   )
+}
+
+async function AddItem({ tags: _tags }: { tags?: Tag[] }) {
+  const tags = _tags ?? (await getTags())
+
+  return <ItemForm tags={tags} submit='Add Item' action={addItem} />
 }

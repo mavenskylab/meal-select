@@ -1,178 +1,58 @@
 'use server'
 
-import { getClient, gql, MealOrderBy } from '@/lib/graphql'
 import { MealForm, MealSchema } from '@/lib/schemas/meal'
+import { getClient } from '@/lib/supabase/client'
 import { FormState } from '@/types/form'
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 
-export async function getMeals({
-  search = '',
-  orderBy,
-}: {
-  search?: string
-  orderBy?: MealOrderBy[]
-}) {
-  const client = getClient()
+export const getMeals = unstable_cache(
+  async ({ search = '' }: { search?: string } = {}) => {
+    const client = await getClient()
 
-  const { data } = await client.query({
-    query: gql(/* GraphQL */ `
-      query GetMeals($search: String, $orderBy: [MealOrderBy!]) {
-        mealCollection(
-          filter: { name: { ilike: $search } }
-          orderBy: $orderBy
-        ) {
-          edges {
-            node {
-              id
-              name
-              mealItemCollection {
-                edges {
-                  node {
-                    item {
-                      id
-                      name
-                    }
-                    count
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `),
-    variables: { search: `%${search}%`, orderBy },
-  })
+    const query = client
+      .from('Meal')
+      .select(
+        '*, items:MealItem(item:Item(id, name, tags:Tag(tag_id:id, name)), count)',
+      )
 
-  return data.mealCollection?.edges ?? []
-}
+    if (search) query.ilike('name', `%${search}%`)
 
-export async function getMeal(id: any) {
-  const client = getClient()
+    const { data, error } = await query
 
-  const { data } = await client.query({
-    query: gql(/* GraphQL */ `
-      query GetMeal($id: BigInt) {
-        mealCollection(filter: { id: { eq: $id } }) {
-          edges {
-            node {
-              id
-              name
-              mealItemCollection {
-                edges {
-                  node {
-                    item {
-                      id
-                      name
-                    }
-                    count
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `),
-    variables: { id },
-  })
+    if (error) throw error
 
-  return data.mealCollection?.edges.at(0) ?? null
-}
+    return data
+  },
+  ['meals'],
+  { revalidate: 3600, tags: ['meals'] },
+)
+
+export const getMeal = async (id: any) =>
+  unstable_cache(
+    async (id: any) => {
+      const client = await getClient()
+
+      const { data, error } = await client
+        .from('Meal')
+        .select(
+          '*, items:MealItem(item:Item(id, name, tags:Tag(tag_id:id, name)), count)',
+        )
+        .eq('id', id)
+        .single()
+
+      if (error) throw error
+
+      return data
+    },
+    [`meal-${id}`],
+    { revalidate: 3600, tags: [`meal-${id}`] },
+  )(id)
 
 export async function addMeal(
   state: FormState<MealForm>,
   payload: MealForm,
 ): Promise<FormState<MealForm>> {
-  const client = getClient()
-
-  const { success, data: _data, error } = MealSchema.safeParse(payload)
-
-  if (!success) {
-    return {
-      success,
-      data: payload,
-      errors: error.format(),
-    }
-  }
-
-  const { name, mealItemCollection } = {
-    ..._data,
-    mealItemCollection: {
-      edges:
-        _data.mealItemCollection?.edges.filter(
-          ({
-            node: {
-              item: { id },
-            },
-          }) => !!id,
-        ) ?? [],
-    },
-  }
-
-  try {
-    // https://github.com/supabase/pg_graphql/issues/294
-
-    const response = await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation AddMeal($name: String!) {
-          insertIntoMealCollection(objects: [{ name: $name }]) {
-            records {
-              id
-            }
-          }
-        }
-      `),
-      variables: { name },
-    })
-
-    if (mealItemCollection.edges.length) {
-      await client.mutate({
-        mutation: gql(/* GraphQL */ `
-          mutation AddMealItem($objects: [MealItemInsertInput!]!) {
-            insertIntoMealItemCollection(objects: $objects) {
-              affectedCount
-            }
-          }
-        `),
-        variables: {
-          objects: mealItemCollection.edges.map(
-            ({
-              node: {
-                item: { id: item_id },
-                count,
-              },
-            }) => ({
-              meal_id:
-                response.data?.insertIntoMealCollection?.records.at(0)?.id,
-              item_id,
-              count,
-            }),
-          ),
-        },
-      })
-    }
-
-    revalidateTag('meals')
-
-    return { success, data: {} }
-  } catch (err) {
-    console.dir(err, { depth: null })
-    return {
-      success: false,
-      data: payload,
-      message:
-        'An error occurred while trying to add the meal. Please try again.',
-    }
-  }
-}
-
-export async function updateMeal(
-  id: number,
-  state: FormState<MealForm>,
-  payload: MealForm,
-): Promise<FormState<MealForm>> {
-  const client = getClient()
+  const client = await getClient()
 
   const { success, data, error } = MealSchema.safeParse(payload)
 
@@ -184,122 +64,79 @@ export async function updateMeal(
     }
   }
 
-  const { name, mealItemCollection } = {
-    ...data,
-    mealItemCollection: data.mealItemCollection?.edges
-      .filter(
-        ({
-          node: {
-            item: { id },
-          },
-        }) => !!id,
+  const { items, ...meal } = data
+
+  const response = await client.from('Meal').insert(meal).select('id').single()
+
+  if (response.error) throw response.error
+
+  const meal_id = response.data.id
+
+  if (items.length) {
+    const response = await client
+      .from('MealItem')
+      .insert(
+        items.map(({ item, count }) => ({ meal_id, item_id: item.id, count })),
       )
-      .map(
-        ({
-          node: {
-            item: { id: item_id },
-            count,
-          },
-        }) => ({
-          meal_id: id,
-          item_id,
-          count,
-        }),
-      ),
+
+    if (response.error) throw response.error
   }
 
-  try {
-    await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation ClearItems($id: BigInt) {
-          deleteFromMealItemCollection(filter: { meal_id: { eq: $id } }) {
-            affectedCount
-          }
-        }
-      `),
-      variables: { id },
-    })
+  revalidateTag('meals')
 
-    if (mealItemCollection?.length) {
-      await client.mutate({
-        mutation: gql(/* GraphQL */ `
-          mutation UpdateMealItems(
-            $mealItemCollection: [MealItemInsertInput!]!
-          ) {
-            insertIntoMealItemCollection(objects: $mealItemCollection) {
-              affectedCount
-            }
-          }
-        `),
-        variables: { mealItemCollection },
-      })
-    }
+  return { success, data: {} }
+}
 
-    const response = await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation UpdateMeal($id: BigInt, $name: String!) {
-          updateMealCollection(
-            filter: { id: { eq: $id } }
-            set: { name: $name }
-          ) {
-            records {
-              id
-              name
-              mealItemCollection {
-                edges {
-                  node {
-                    item {
-                      id
-                      name
-                    }
-                    count
-                  }
-                }
-              }
-            }
-          }
-        }
-      `),
-      variables: { id, name },
-    })
+export async function updateMeal(
+  id: number,
+  state: FormState<MealForm>,
+  payload: MealForm,
+): Promise<FormState<MealForm>> {
+  const client = await getClient()
 
-    revalidateTag('meals')
+  const { success, data, error } = MealSchema.safeParse(payload)
 
+  if (!success) {
     return {
       success,
-      data: response.data!.updateMealCollection.records.at(0)! as MealForm,
-    }
-  } catch (err) {
-    console.dir(err, { depth: null })
-    return {
-      success: false,
       data: payload,
-      message:
-        'An error occurred while trying to update the meal. Please try again.',
+      errors: error.format(),
     }
   }
+
+  const { items, ...meal } = data
+
+  const response = await client.from('Meal').update(meal).eq('id', id)
+
+  if (response.error) throw response.error
+
+  await client.from('MealItem').delete().eq('meal_id', id)
+
+  if (items.length) {
+    const response = await client.from('MealItem').insert(
+      items.map(({ item, count }) => ({
+        meal_id: id,
+        item_id: item.id,
+        count,
+      })),
+    )
+
+    if (response.error) throw response.error
+  }
+
+  revalidateTag('meals')
+
+  return { success, data }
 }
 
 export async function deleteMeal(id: any) {
-  const client = getClient()
+  const client = await getClient()
 
-  try {
-    await client.mutate({
-      mutation: gql(/* GraphQL */ `
-        mutation DeleteMeal($id: BigInt) {
-          deleteFromMealCollection(filter: { id: { eq: $id } }) {
-            affectedCount
-          }
-        }
-      `),
-      variables: { id, count: 0 },
-    })
+  const { error, count } = await client.from('Meal').delete().eq('id', id)
 
-    revalidateTag('meals')
+  if (error) throw error
 
-    return true
-  } catch (err) {
-    console.dir(err, { depth: null })
-    return false
-  }
+  revalidateTag('meals')
+
+  return count
 }

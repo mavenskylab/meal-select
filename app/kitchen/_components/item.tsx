@@ -3,16 +3,17 @@ import { HiXMark } from 'react-icons/hi2'
 import { updateItem } from '../_actions/items'
 import ItemForm from './item-form'
 import type { Item } from '@/lib/schemas/item'
+import { Tag } from '@/lib/schemas/tag'
 
-export default function Item({ item: { node } }: { item: Item }) {
+export default function Item({ tags, item }: { tags: Tag[]; item: Item }) {
   return (
     <Modal
       className='h-auto p-0 text-start'
       button={
         <div className='grid w-full grid-flow-row gap-3 p-3'>
-          <span className='text-primary text-lg'>{node.name}</span>
-          <span className='capitalize'>{node.store}</span>
-          <span>{node.count}</span>
+          <span className='text-primary text-lg'>{item.name}</span>
+          <span className='capitalize'>{item.store}</span>
+          <span>{item.count}</span>
         </div>
       }
     >
@@ -27,9 +28,10 @@ export default function Item({ item: { node } }: { item: Item }) {
           </form>
         </div>
         <ItemForm
-          data={node as any}
+          tags={tags}
+          data={item as any}
           submit='Update Item'
-          action={updateItem.bind(null, node.id)}
+          action={updateItem.bind(null, item.id)}
         />
       </div>
     </Modal>

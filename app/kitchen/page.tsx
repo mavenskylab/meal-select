@@ -1,7 +1,6 @@
-import { OrderByDirection } from '@/lib/graphql'
-import { unstable_cache } from 'next/cache'
 import { getItems } from './_actions/items'
 import Item from './_components/item'
+import { getTags } from '../account/tags/_actions/tags'
 
 export default async function Page({
   searchParams,
@@ -10,16 +9,8 @@ export default async function Page({
 }) {
   const query = await searchParams
 
-  const items = await unstable_cache(getItems, ['items'], {
-    revalidate: 3600,
-    tags: ['items'],
-  })({
-    ...query,
-    orderBy: [
-      { count: OrderByDirection.DescNullsLast },
-      { name: OrderByDirection.AscNullsLast },
-    ],
-  })
+  const tags = await getTags()
+  const items = await getItems(query)
 
-  return items.map((item) => <Item key={item.node.id} item={item} />)
+  return items.map((item) => <Item key={item.id} tags={tags} item={item} />)
 }
