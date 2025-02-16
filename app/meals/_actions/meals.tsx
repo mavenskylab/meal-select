@@ -68,7 +68,16 @@ export async function addMeal(
 
   const response = await client.from('Meal').insert(meal).select('id').single()
 
-  if (response.error) throw response.error
+  if (response.error) {
+    console.dir(response.error, { depth: null })
+    return {
+      success: false,
+      data: payload,
+      errors: {
+        _errors: [response.error.message],
+      },
+    }
+  }
 
   const meal_id = response.data.id
 
@@ -79,7 +88,16 @@ export async function addMeal(
         items.map(({ item, count }) => ({ meal_id, item_id: item.id, count })),
       )
 
-    if (response.error) throw response.error
+    if (response.error) {
+      console.dir(response.error, { depth: null })
+      return {
+        success: false,
+        data: payload,
+        errors: {
+          _errors: [response.error.message],
+        },
+      }
+    }
   }
 
   revalidateTag('meals')
@@ -108,7 +126,16 @@ export async function updateMeal(
 
   const response = await client.from('Meal').update(meal).eq('id', id)
 
-  if (response.error) throw response.error
+  if (response.error) {
+    console.dir(response.error, { depth: null })
+    return {
+      success: false,
+      data: payload,
+      errors: {
+        _errors: [response.error.message],
+      },
+    }
+  }
 
   await client.from('MealItem').delete().eq('meal_id', id)
 
@@ -121,7 +148,16 @@ export async function updateMeal(
       })),
     )
 
-    if (response.error) throw response.error
+    if (response.error) {
+      console.dir(response.error, { depth: null })
+      return {
+        success: false,
+        data: payload,
+        errors: {
+          _errors: [response.error.message],
+        },
+      }
+    }
   }
 
   revalidateTag('meals')

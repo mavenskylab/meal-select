@@ -10,6 +10,7 @@ export default async function Page({
   const query = await searchParams
 
   const tags = await getTags()
+
   const items = await getItems(query)
 
   return items.map((item) => <Item key={item.id} tags={tags} item={item} />)
