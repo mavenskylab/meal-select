@@ -8,7 +8,7 @@ import { HiMagnifyingGlass } from 'react-icons/hi2'
 export default function Search() {
   const router = useRouter()
   const pathname = usePathname()
-  const [searchParams, setSearchParam] = useSearchParams()
+  const { searchParams, setSearchParam } = useSearchParams()
   const [search, setSearch] = useState(searchParams.search ?? '')
 
   useEffect(() => {
