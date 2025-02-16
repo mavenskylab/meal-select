@@ -64,7 +64,7 @@ export async function addMeal(
     }
   }
 
-  const { items, ...meal } = data
+  const { items: _items, ...meal } = data
 
   const response = await client.from('Meal').insert(meal).select('id').single()
 
@@ -80,6 +80,8 @@ export async function addMeal(
   }
 
   const meal_id = response.data.id
+
+  const items = _items.filter(({ item }) => item.id)
 
   if (items.length) {
     const response = await client
@@ -122,7 +124,7 @@ export async function updateMeal(
     }
   }
 
-  const { items, ...meal } = data
+  const { items: _items, ...meal } = data
 
   const response = await client.from('Meal').update(meal).eq('id', id)
 
@@ -138,6 +140,8 @@ export async function updateMeal(
   }
 
   await client.from('MealItem').delete().eq('meal_id', id)
+
+  const items = _items.filter(({ item }) => item.id)
 
   if (items.length) {
     const response = await client.from('MealItem').insert(
