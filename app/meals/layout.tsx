@@ -1,5 +1,11 @@
 import Search, { SearchFallback } from '@/components/forms/search'
+import Modal from '@/components/modal'
 import { Suspense } from 'react'
+import { HiPlus, HiXMark } from 'react-icons/hi2'
+import { addMeal } from './_actions/meals'
+import MealForm from './_components/meal-form'
+import { Item } from '@/lib/schemas/item'
+import { getItems } from '../kitchen/_actions/items'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +15,39 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Search />
         </Suspense>
       </div>
-      {children}
+      <div className='grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'>
+        {children}
+      </div>
+      <Modal
+        className={'btn-circle btn-primary btn-xl fixed right-5 bottom-5'}
+        button={
+          <>
+            <span className='sr-only'>Add Meal</span>
+            <HiPlus className='size-10' />
+          </>
+        }
+      >
+        <div className='modal-box'>
+          <div className='flex items-center justify-between'>
+            <span className='text-lg font-bold'>Add Meal</span>
+            <form method='dialog'>
+              <button type='submit' className='btn btn-circle btn-ghost'>
+                <span className='sr-only'>Close</span>
+                <HiXMark />
+              </button>
+            </form>
+          </div>
+          <Suspense fallback={<AddMeal items={[]} />}>
+            <AddMeal />
+          </Suspense>
+        </div>
+      </Modal>
     </main>
   )
+}
+
+async function AddMeal({ items: _items }: { items?: Item[] }) {
+  const items = _items ?? (await getItems())
+
+  return <MealForm items={items} submit='Add Meal' action={addMeal} />
 }

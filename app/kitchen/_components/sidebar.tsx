@@ -1,6 +1,9 @@
 'use client'
 
-import { useSearchParams } from '@/hooks/use-search-params'
+import {
+  type SearchParamsReturn,
+  useSearchParams,
+} from '@/hooks/use-search-params'
 import { cn } from '@/lib/util'
 import Link from 'next/link'
 import { BiSolidFridge } from 'react-icons/bi'
@@ -9,23 +12,15 @@ import { IoSnow } from 'react-icons/io5'
 import { MdDoorSliding } from 'react-icons/md'
 
 export default function Sidebar() {
-  const [searchParams, setSearchParam] = useSearchParams()
+  const searchParamsProps = useSearchParams()
 
-  return (
-    <SidebarFallback
-      searchParams={searchParams}
-      setSearchParam={setSearchParam}
-    />
-  )
+  return <SidebarFallback {...searchParamsProps} />
 }
 
 export function SidebarFallback({
   searchParams,
   setSearchParam,
-}: {
-  searchParams?: Record<string, string | string[] | undefined>
-  setSearchParam?: (name: string, value: string | string[]) => string
-}) {
+}: Partial<SearchParamsReturn>) {
   return (
     <aside className='flex flex-col gap-5 py-5 md:w-60'>
       <section>

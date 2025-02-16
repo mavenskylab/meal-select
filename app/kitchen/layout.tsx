@@ -42,7 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               </form>
             </div>
-            <Suspense fallback={<AddItem />}>
+            <Suspense fallback={<AddItem tags={[]} />}>
               <AddItem />
             </Suspense>
           </div>

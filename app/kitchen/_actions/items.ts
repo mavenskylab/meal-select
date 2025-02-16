@@ -20,6 +20,8 @@ export const getItems = unstable_cache(
 
     return data
   },
+  ['items'],
+  { revalidate: 3600, tags: ['items'] },
 )
 
 export async function addItem(
@@ -42,7 +44,16 @@ export async function addItem(
 
   const response = await client.from('Item').insert(item).select('id').single()
 
-  if (response.error) throw response.error
+  if (response.error) {
+    console.dir(response.error, { depth: null })
+    return {
+      success: false,
+      data: payload,
+      errors: {
+        _errors: [response.error.message],
+      },
+    }
+  }
 
   const item_id = response.data.id
 
@@ -51,7 +62,16 @@ export async function addItem(
       .from('ItemTag')
       .insert(tags.map(({ tag_id }) => ({ item_id, tag_id })))
 
-    if (response.error) throw response.error
+    if (response.error) {
+      console.dir(response.error, { depth: null })
+      return {
+        success: false,
+        data: payload,
+        errors: {
+          _errors: [response.error.message],
+        },
+      }
+    }
   }
 
   revalidateTag('items')
@@ -80,7 +100,16 @@ export async function updateItem(
 
   const response = await client.from('Item').update(item).eq('id', id)
 
-  if (response.error) throw response.error
+  if (response.error) {
+    console.dir(response.error, { depth: null })
+    return {
+      success: false,
+      data: payload,
+      errors: {
+        _errors: [response.error.message],
+      },
+    }
+  }
 
   await client.from('ItemTag').delete().eq('item_id', id)
 
@@ -89,7 +118,16 @@ export async function updateItem(
       .from('ItemTag')
       .insert(tags.map(({ tag_id }) => ({ item_id: id, tag_id })))
 
-    if (response.error) throw response.error
+    if (response.error) {
+      console.dir(response.error, { depth: null })
+      return {
+        success: false,
+        data: payload,
+        errors: {
+          _errors: [response.error.message],
+        },
+      }
+    }
   }
 
   revalidateTag('items')
