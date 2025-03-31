@@ -6,7 +6,7 @@ import { FormState } from '@/types/form'
 import { revalidateTag, unstable_cache } from 'next/cache'
 
 export const getItems = unstable_cache(
-  async ({ search = '', store }: { search?: string; store?: string } = {}) => {
+  async ({ search, store }: { search?: string; store?: string } = {}) => {
     const client = await getClient()
 
     const query = client.from('Item').select('*, tags:Tag(tag_id:id, name)')
@@ -14,7 +14,7 @@ export const getItems = unstable_cache(
     if (store) query.eq('store', store)
     if (search) query.ilike('name', `%${search}%`)
 
-    const { data, error } = await query
+    const { data, error } = await query.order('name')
 
     if (error) throw error
 

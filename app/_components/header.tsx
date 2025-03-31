@@ -2,7 +2,7 @@
 
 import Select from '@/components/forms/select'
 import Switch from '@/components/forms/switch'
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 import { ClassValue } from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

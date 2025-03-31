@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 import { DetailedHTMLProps, InputHTMLAttributes, useRef } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 

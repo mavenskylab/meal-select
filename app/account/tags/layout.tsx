@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import Search, { SearchFallback } from '@/components/forms/search'
 import { addTag } from './_actions/tags'
 import TagForm from './_components/tag-from'
+import { SearchSuspense } from '@/components/util/search-suspense'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Suspense>
       </div>
       <div className='grid grid-cols-2 gap-5 p-5 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8'>
-        {children}
+      <SearchSuspense>{children}</SearchSuspense>
       </div>
       <Modal
         className={'btn-circle btn-primary btn-xl fixed right-5 bottom-5'}

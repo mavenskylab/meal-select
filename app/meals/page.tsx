@@ -1,3 +1,4 @@
+import { formatSearchParams } from '@/lib/util/format-search-params'
 import { getItems } from '../kitchen/_actions/items'
 import { getMeals } from './_actions/meals'
 import Meal from './_components/meal'
@@ -5,9 +6,16 @@ import Meal from './_components/meal'
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[]>>
+  searchParams: Promise<{
+    search?: string
+    'includes[]'?: string | string[]
+    'requires[]'?: string | string[]
+    'excludes[]'?: string | string[]
+  }>
 }) {
-  const query = await searchParams
+  const query = formatSearchParams(await searchParams)
+
+  console.log(query)
 
   const items = await getItems()
 
