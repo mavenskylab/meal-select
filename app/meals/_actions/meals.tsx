@@ -4,22 +4,38 @@ import { MealForm, MealSchema } from '@/lib/schemas/meal'
 import { getClient } from '@/lib/supabase/client'
 import { FormState } from '@/types/form'
 import { revalidateTag, unstable_cache } from 'next/cache'
+import { number } from 'zod'
 
 export const getMeals = unstable_cache(
-  async ({ search = '' }: { search?: string } = {}) => {
+  async ({
+    search,
+    includes,
+    requires,
+    excludes,
+  }: {
+    search?: string
+    includes?: string[]
+    requires?: string[]
+    excludes?: string[]
+  } = {}) => {
     const client = await getClient()
 
     const query = client
       .from('Meal')
       .select(
-        '*, items:MealItem(item:Item(id, name, tags:Tag(tag_id:id, name)), count)',
+        `*, items:MealItem${includes || requires ? '!inner' : ''}(item:Item${includes || requires ? '!inner' : ''}(id, name, tags:Tag${includes || requires ? '!inner' : ''}(id, name)), count)`,
       )
 
     if (search) query.ilike('name', `%${search}%`)
+    if (includes) query.in('items.item.tags.id', includes)
+    if (requires) query.contains('items.item.tags.id', requires)
+    if (excludes) query.not('items.item.tags.id', 'in', `(${excludes.join(',')})`)
 
-    const { data, error } = await query
+    const { data, error } = await query.order('name')
 
     if (error) throw error
+
+    console.dir(data, { depth: null })
 
     return data
   },
@@ -35,7 +51,7 @@ export const getMeal = async (id: any) =>
       const { data, error } = await client
         .from('Meal')
         .select(
-          '*, items:MealItem(item:Item(id, name, tags:Tag(tag_id:id, name)), count)',
+          '*, items:MealItem(item:Item(id, name, tags:Tag(id, name)), count)',
         )
         .eq('id', id)
         .single()
@@ -64,7 +80,7 @@ export async function addMeal(
     }
   }
 
-  const { items, ...meal } = data
+  const { items: _items, ...meal } = data
 
   const response = await client.from('Meal').insert(meal).select('id').single()
 
@@ -80,6 +96,8 @@ export async function addMeal(
   }
 
   const meal_id = response.data.id
+
+  const items = _items.filter(({ item }) => item.id)
 
   if (items.length) {
     const response = await client
@@ -122,7 +140,7 @@ export async function updateMeal(
     }
   }
 
-  const { items, ...meal } = data
+  const { items: _items, ...meal } = data
 
   const response = await client.from('Meal').update(meal).eq('id', id)
 
@@ -138,6 +156,8 @@ export async function updateMeal(
   }
 
   await client.from('MealItem').delete().eq('meal_id', id)
+
+  const items = _items.filter(({ item }) => item.id)
 
   if (items.length) {
     const response = await client.from('MealItem').insert(

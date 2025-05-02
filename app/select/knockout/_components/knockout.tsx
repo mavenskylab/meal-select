@@ -4,7 +4,7 @@ import type { Meal } from '@/lib/schemas/meal'
 import { useEffect, useReducer } from 'react'
 import { knockoutInitializer, knockoutReducer } from './knockout-reducer'
 import Winner from '../../_components/winner'
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 
 export default function Knockout({ meals }: { meals: Meal[] }) {
   const [{ winner, match, progress, isLast }, dispatch] = useReducer(

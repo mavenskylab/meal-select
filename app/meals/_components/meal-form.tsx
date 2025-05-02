@@ -6,7 +6,7 @@ import Submit from '@/components/forms/submit'
 import { type Form, useFormState } from '@/hooks/use-form-state'
 import { Item } from '@/lib/schemas/item'
 import { type Meal, type MealForm, MealSchema } from '@/lib/schemas/meal'
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 import { FormState } from '@/types/form'
 import { useEffect, useRef } from 'react'
 import { useFieldArray } from 'react-hook-form'
@@ -122,22 +122,16 @@ function Items({
   })
 
   useEffect(() => {
-    if (!fields.length) append({} as any)
-  }, [append])
-
-  useEffect(() => {
-    const { unsubscribe } = watch((value, { name }) => {
-      if (!name?.includes('items')) return
+    const { unsubscribe } = watch((value) => {
 
       const hasEmpty = !!value.items?.some((value) => !value?.item?.id)
 
-      if (!hasEmpty) append({ node: { count: '' } } as any)
+      if (!hasEmpty) append({ count: ''} as any)
     })
     return unsubscribe
   }, [watch])
 
-  const fieldIds = fields.map(({ item }) => item?.id)
-  const filteredItems = items.filter(({ id }) => !fieldIds.includes(id))
+  const fieldIds = fields.map(({ item }) => Number(item?.id))
 
   return (
     <>
@@ -151,14 +145,19 @@ function Items({
               label='Item'
               errors={form.formState.errors?.items?.[index]?.item?.id}
               {...form.register(`items.${index}.item.id`)}
-              disabled={!filteredItems.length}
+              disabled={items.length === fieldIds.length}
             >
               <option value=''>-</option>
-              {filteredItems.map(({ id, name }) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
-              ))}
+              {items
+                .filter(
+                  ({ id }) =>
+                    !fieldIds.includes(id) || Number(item.item?.id) === id,
+                )
+                .map(({ id, name }) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
             </Select>
             <button
               type='button'

@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 import { ClassValue } from 'clsx'
 import { useRef } from 'react'
 

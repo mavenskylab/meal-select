@@ -1,4 +1,4 @@
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 import { DetailedHTMLProps, InputHTMLAttributes } from 'react'
 
 export type SwitchProps = {

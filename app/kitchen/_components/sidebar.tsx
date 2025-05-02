@@ -4,7 +4,7 @@ import {
   type SearchParamsReturn,
   useSearchParams,
 } from '@/hooks/use-search-params'
-import { cn } from '@/lib/util'
+import { cn } from '@/lib/util/cn'
 import Link from 'next/link'
 import { BiSolidFridge } from 'react-icons/bi'
 import { HiSparkles } from 'react-icons/hi2'

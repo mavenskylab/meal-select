@@ -9,10 +9,11 @@ export const getTags = unstable_cache(
   async ({ search = '' }: { search?: string } = {}) => {
     const client = await getClient()
 
-    const { data, error } = await client
-      .from('Tag')
-      .select('*')
-      .ilike('name', `%${search}%`)
+    const query = client.from('Tag').select('*')
+
+    if (search) query.ilike('name', `%${search}%`)
+
+    const { data, error } = await query.order('name')
 
     if (error) throw error
 

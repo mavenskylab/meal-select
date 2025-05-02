@@ -7,6 +7,7 @@ import Sidebar, { SidebarFallback } from './_components/sidebar'
 import { Suspense } from 'react'
 import { getTags } from '../account/tags/_actions/tags'
 import { Tag } from '@/lib/schemas/tag'
+import { SearchSuspense } from '@/components/util/search-suspense'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Suspense>
         </div>
         <div className='grid grid-cols-2 gap-5 p-5 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8'>
-          {children}
+          <SearchSuspense>{children}</SearchSuspense>
         </div>
         <Modal
           className={'btn-circle btn-primary btn-xl fixed right-5 bottom-5'}
